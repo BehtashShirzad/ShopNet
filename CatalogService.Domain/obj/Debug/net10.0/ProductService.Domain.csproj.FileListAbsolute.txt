@@ -1,0 +1,15 @@
+N:\Projects\Dotnet\Shop\ShopNet\CatalogService\CatalogService.Domain\bin\Debug\net10.0\CatalogService.Domain.deps.json
+N:\Projects\Dotnet\Shop\ShopNet\CatalogService\CatalogService.Domain\bin\Debug\net10.0\CatalogService.Domain.dll
+N:\Projects\Dotnet\Shop\ShopNet\CatalogService\CatalogService.Domain\bin\Debug\net10.0\CatalogService.Domain.pdb
+N:\Projects\Dotnet\Shop\ShopNet\CatalogService\CatalogService.Domain\obj\Debug\net10.0\CatalogService.Domain.GeneratedMSBuildEditorConfig.editorconfig
+N:\Projects\Dotnet\Shop\ShopNet\CatalogService\CatalogService.Domain\obj\Debug\net10.0\CatalogService.Domain.AssemblyInfoInputs.cache
+N:\Projects\Dotnet\Shop\ShopNet\CatalogService\CatalogService.Domain\obj\Debug\net10.0\CatalogService.Domain.AssemblyInfo.cs
+N:\Projects\Dotnet\Shop\ShopNet\CatalogService\CatalogService.Domain\obj\Debug\net10.0\CatalogService.Domain.csproj.CoreCompileInputs.cache
+N:\Projects\Dotnet\Shop\ShopNet\CatalogService\CatalogService.Domain\obj\Debug\net10.0\CatalogService.Domain.dll
+N:\Projects\Dotnet\Shop\ShopNet\CatalogService\CatalogService.Domain\obj\Debug\net10.0\refint\CatalogService.Domain.dll
+N:\Projects\Dotnet\Shop\ShopNet\CatalogService\CatalogService.Domain\obj\Debug\net10.0\CatalogService.Domain.pdb
+N:\Projects\Dotnet\Shop\ShopNet\CatalogService\CatalogService.Domain\obj\Debug\net10.0\ref\CatalogService.Domain.dll
+N:\Projects\Dotnet\Shop\ShopNet\CatalogService\CatalogService.Domain\bin\Debug\net10.0\SharedKernel.Domain.dll
+N:\Projects\Dotnet\Shop\ShopNet\CatalogService\CatalogService.Domain\bin\Debug\net10.0\SharedKernel.Domain.pdb
+N:\Projects\Dotnet\Shop\ShopNet\CatalogService\CatalogService.Domain\obj\Debug\net10.0\CatalogService.Domain.csproj.AssemblyReference.cache
+N:\Projects\Dotnet\Shop\ShopNet\CatalogService\CatalogService.Domain\obj\Debug\net10.0\ProductS.EEC24C0B.Up2Date

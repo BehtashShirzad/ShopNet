@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/CatalogService/">
+    <Project Path="CatalogService.Api/CatalogService.Api.csproj" />
+    <Project Path="CatalogService.Domain/CatalogService.Domain.csproj" />
+    <Project Path="CatalogService.Application/CatalogService.Application.csproj" />
+    <Project Path="SharedKernel.Domain/SharedKernel.Domain.csproj" />
+    <Project Path="CatalogService.Infrastructure/CatalogService.Infrastructure.csproj" />
+  </Folder>
+</Solution>
+ 
