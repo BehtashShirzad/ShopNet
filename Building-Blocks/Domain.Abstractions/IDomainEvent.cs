@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
+ 
 
 namespace Domain.Abstractions
 {
     
-   public interface IDomainEvent :INotification
+   public interface IDomainEvent  
     {
         Guid Id { get; }
         DateTime OccurredOn { get; }

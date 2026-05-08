@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Application.Abstractions.Contracts;
+using Application.Abstractions;
 namespace CatalogService.Infrastructure
 {
     public static class InfraDependency
@@ -24,7 +25,8 @@ namespace CatalogService.Infrastructure
             });
            services.AddScoped<ICurrentUser, CurrentUser>();
            services.AddScoped<IBus, Bus>();
- 
+ services.AddScoped<IDomainEventDispatcher, MediatrDomainEventDispatcher>();
+
         }
         
     }

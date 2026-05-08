@@ -5,16 +5,17 @@ using System.Threading.Tasks;
 using MediatR;
 using Application.Abstractions.Contracts;
 using Domain.Abstractions;
+using Application.Abstractions;
 
 namespace CatalogService.Infrastructure
 {
-    public class Bus(IMediator mediator): IBus
+    public class Bus(IDomainEventDispatcher dispatcher): IBus
     {
         public async Task PublishAsync<T>(T message, CancellationToken cancellationToken = default)
           where T : IDomainEvent
          
         {
-        await   mediator.Publish(message, cancellationToken);
+        await   dispatcher.DispatchAsync(message, cancellationToken);
       
         }
 
