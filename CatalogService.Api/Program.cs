@@ -3,6 +3,7 @@ using CatalogService.Api.Routes;
 using CatalogService.Application;
 using CatalogService.Infrastructure;
 using Serilog;
+using Application.Abstractions.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,8 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 builder.Services.AddInfraService(builder.Configuration);
 builder.Host.UseSerilog();
+builder.Services.AddHttpContextAccessor();
+
 
 var app = builder.Build();
  

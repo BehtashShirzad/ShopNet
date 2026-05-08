@@ -2,7 +2,7 @@
 using Ardalis.GuardClauses;
 using CatalogService.Domain.DomainEvents;
 using CatalogService.Domain.ExceptionMessages;
-using SharedKernel.Domain;
+using Domain.Abstractions;
 
 namespace CatalogService.Domain.Aggregates
 {

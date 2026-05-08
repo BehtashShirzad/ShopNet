@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CatalogService.Domain.Contracts;
+ 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Application.Abstractions.Contracts;
 namespace CatalogService.Infrastructure
 {
     public static class InfraDependency
@@ -21,10 +22,9 @@ namespace CatalogService.Infrastructure
             {
                 opt.UseSqlServer(configuration.GetConnectionString("CatalogServiceConnection"));
             });
-           
-
-           services.AddScoped<IUnitOfWork>(provider =>
-    provider.GetRequiredService<WriteDbContext>());
+           services.AddScoped<ICurrentUser, CurrentUser>();
+           services.AddScoped<IBus, Bus>();
+ 
         }
         
     }

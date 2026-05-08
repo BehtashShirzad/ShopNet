@@ -5,12 +5,13 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using CatalogService.Domain.Aggregates;
 using MediatR;
-using SharedKernel.Domain;
+using Application.Abstractions;
+using Domain.Abstractions;
 
 namespace CatalogService.Application.Features.Product.Commands.UpdateProduct
 {
     public record UpdateProductCommand(Guid ProductId,Guid? CategoryId, string? NewName, decimal? Price, string? Description)
-    : IRequest<bool>;
+    : ICommand<bool>;
     public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, bool>
     {
         public async Task<bool> Handle(UpdateProductCommand request, CancellationToken cancellationToken)

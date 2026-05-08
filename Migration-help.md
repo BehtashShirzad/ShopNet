@@ -1,2 +1,2 @@
-dotnet ef migrations add  add-product-category  --startup-project .\CatalogService.Api\ -p .\CatalogService.Infrastructure\
-dotnet ef  database update --startup-project .\CatalogService.Api\ -p .\CatalogService.Infrastructure\
+dotnet ef migrations add  add-product-category  --startup-project .\CatalogService.Api\ -p .\CatalogService.Infrastructure\ -c WriteDbContext
+dotnet ef  database update --startup-project .\CatalogService.Api\ -p .\CatalogService.Infrastructure\ -c WriteDbContext

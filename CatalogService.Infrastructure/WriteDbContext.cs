@@ -3,48 +3,75 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CatalogService.Domain.Aggregates;
-using CatalogService.Domain.Contracts;
+ 
 using CatalogService.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Application.Abstractions.Contracts;
+using Domain.Abstractions;
 
 namespace CatalogService.Infrastructure
 {
-    public class WriteDbContext:DbContext,IUnitOfWork
+    public class WriteDbContext:DbContext 
     {
-        public WriteDbContext(DbContextOptions<WriteDbContext> options)
+        private readonly IBus _bus;
+        private readonly ICurrentUser _currentUser;
+        public WriteDbContext(DbContextOptions<WriteDbContext> options,IBus bus,ICurrentUser currentUser)
             : base(options)
         {
+            _bus = bus;
+          _currentUser = currentUser;
               ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
-
+            Bus = bus;
         }
 
 
  
- public async Task<int> PersistAsync(CancellationToken cancellationToken = default)
-{
-    return await base.SaveChangesAsync(cancellationToken);
-}
-
-public async Task<int> PersistTransactionalAsync(CancellationToken cancellationToken = default)
-{
-    using var transaction = await Database.BeginTransactionAsync(cancellationToken);
-
-    try
+  public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+var userId =Guid.TryParse( _currentUser.UserId,out Guid currentUserId )? currentUserId  : Guid.Empty;
+
+     
+
+
+ foreach (var entry in ChangeTracker.Entries<Entity>())
+        {
+            if (entry.Entity is Entity aggregateRoot)
+            {
+                if (entry.State == EntityState.Added)
+                    {
+                        aggregateRoot.CreatorId = currentUserId ;
+                        aggregateRoot.CreatedAt = DateTime.UtcNow;
+                    }
+                else if (entry.State == EntityState.Modified)
+                {
+                    aggregateRoot.ModifierId = currentUserId ;
+                    aggregateRoot.ModifiedAt = DateTime.UtcNow;
+                }
+            }
+        }
+  
+var domainEvents = ChangeTracker.Entries()
+    .Where(e => e.Entity is IAggregateRoot)
+    .SelectMany(e => ((IAggregateRoot)e.Entity).DomainEvents)
+    .ToList();
+
+
         var result = await base.SaveChangesAsync(cancellationToken);
-        await transaction.CommitAsync(cancellationToken);
+
+        foreach (var domainEvent in domainEvents)
+        {
+            await _bus.PublishAsync(domainEvent, cancellationToken);
+        }
+
+        foreach (var entry in ChangeTracker.Entries<IAggregateRoot>())
+        {
+            entry.Entity.ClearEvents();
+        }
+
         return result;
     }
-    catch
-    {
-        await transaction.RollbackAsync(cancellationToken);
-        throw;
-    }
-}
-
-
         public DbSet<ProductAggregate> Products { get; set; }
         public DbSet<CategoryEntity> Categories { get; set; }
-
+        public IBus Bus { get; }
     }
 }

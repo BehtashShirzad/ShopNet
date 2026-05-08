@@ -1,8 +1,9 @@
- 
+
+using System.Runtime.CompilerServices;
 using CatalogService.Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using SharedKernel.Application;
+using Application.Abstractions;
 namespace CatalogService.Application.Pipelines
 {
 
@@ -23,8 +24,11 @@ public class TransactionBehavior<TRequest, TResponse>
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
+        if (request is not ICommand)
+    return await next();
+
         
-        if (request is not ICommand<TResponse>)
+        if (_context.Database.CurrentTransaction != null)
             return await next();
 
         await using var transaction = 
@@ -46,6 +50,7 @@ public class TransactionBehavior<TRequest, TResponse>
             throw;
         }
     }
+ 
 }
 
 }

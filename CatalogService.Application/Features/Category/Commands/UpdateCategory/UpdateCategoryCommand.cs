@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using CatalogService.Domain.Entities;
 using MediatR;
+using Application.Abstractions;
 
 namespace CatalogService.Application.Features.Category.Commands.UpdateCategory
 {
-    public record UpdateCategoryCommand(Guid Id,string NewName):IRequest<bool>;
+    public record UpdateCategoryCommand(Guid Id,string NewName):ICommand<bool>;
 
     public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryCommand, bool>
     {

@@ -7,8 +7,14 @@
   </PropertyGroup>
     <ItemGroup>
       <ProjectReference Include="..\CatalogService.Domain\CatalogService.Domain.csproj" />
+         <ProjectReference Include="..\Application.Abstractions\Application.Abstractions.csproj" />
+         <ProjectReference Include="..\Infrastructure.Abstractions\Infrastructure.Abstractions.csproj" />
     </ItemGroup>
 <ItemGroup>
+    
+    <PackageReference Include="MassTransit.RabbitMQ" Version="9.1.0" />
+    
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.9" />
     
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.7" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.7" />

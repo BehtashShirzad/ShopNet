@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Ardalis.GuardClauses;
 using CatalogService.Domain.ExceptionMessages;
-using SharedKernel.Domain;
+using Domain.Abstractions;
 
 namespace CatalogService.Domain.Entities
 {

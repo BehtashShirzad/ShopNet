@@ -3,9 +3,10 @@
     <Project Path="CatalogService.Api/CatalogService.Api.csproj" />
     <Project Path="CatalogService.Domain/CatalogService.Domain.csproj" />
     <Project Path="CatalogService.Application/CatalogService.Application.csproj" />
-    <Project Path="SharedKernel.Application/SharedKernel.Application.csproj" />
-    <Project Path="SharedKernel.Domain/SharedKernel.Domain.csproj" />
+    <Project Path="Application.Abstractions/Application.Abstractions.csproj" />
+    <Project Path="Domain.Abstractions/Domain.Abstractions.csproj" />
     <Project Path="CatalogService.Infrastructure/CatalogService.Infrastructure.csproj" />
+    <Project Path="Infrastructure.Abstractions/Infrastructure.Abstractions.csproj" />
   </Folder>
 </Solution>
  

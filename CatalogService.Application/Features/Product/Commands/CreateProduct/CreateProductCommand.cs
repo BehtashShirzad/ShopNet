@@ -3,19 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CatalogService.Domain.Aggregates;
-using CatalogService.Domain.Contracts;
+ 
 using CatalogService.Infrastructure;
 using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Application.Abstractions;
 
 namespace CatalogService.Application.Features.Product.CreateProduct
 {
 
-    public record CreateProductCommand(Guid  CategoryId,string Name, string Description,decimal Price):IRequest<CreateProductCommandResponse>;
+    public record CreateProductCommand(Guid  CategoryId,string Name, string Description,decimal Price)
+    :ICommand<CreateProductCommandResponse>;
     public record CreateProductCommandResponse(string Name,string Description,decimal Price);
 
-    public class CreateProductCommandHandler(WriteDbContext dbContext,IUnitOfWork unitOfWork) : IRequestHandler<CreateProductCommand,CreateProductCommandResponse>
+    public class CreateProductCommandHandler(WriteDbContext dbContext ) : IRequestHandler<CreateProductCommand,CreateProductCommandResponse>
     {
         public async Task<CreateProductCommandResponse> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
@@ -29,9 +31,8 @@ namespace CatalogService.Application.Features.Product.CreateProduct
             
            var product = ProductAggregate.Create(request.CategoryId,request.Name,request.Description,request.Price);
             await dbContext.Products.AddAsync(product);
-            await dbContext.SaveChangesAsync(cancellationToken);
-
-            await unitOfWork.PersistAsync(cancellationToken);
+          
+             
            var dto = product.Adapt<CreateProductCommandResponse>();
             return dto;
 

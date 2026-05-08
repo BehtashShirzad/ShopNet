@@ -2,18 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 
-namespace SharedKernel.Domain
+namespace Domain.Abstractions
 {
     
-   public interface IDomainEvent 
+   public interface IDomainEvent :INotification
     {
         Guid Id { get; }
         DateTime OccurredOn { get; }
     }
-   public interface IDomainEvent<TID>
-    {
-        TID Id { get; }
-        DateTime OccurredOn { get; }
-    }
+    
 }

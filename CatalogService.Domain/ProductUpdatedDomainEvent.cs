@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SharedKernel.Domain;
+using Domain.Abstractions;
 
 namespace CatalogService.Domain
 {
-    public class ProductUpdatedDomainEvent : IDomainEvent<Guid>
+    public class ProductUpdatedDomainEvent : IDomainEvent
     {
         public ProductUpdatedDomainEvent(Guid id)
         
