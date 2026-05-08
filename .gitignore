@@ -59,3 +59,55 @@ nunit-*.xml
 # VsCode
 .vscode/
 .idea/
+
+
+# Build folders
+bin/
+obj/
+Debug/
+Release/
+
+# Logs
+*.log
+logs/
+
+# User specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+
+# Visual Studio
+.vs/
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+
+# Environment
+.env
+
+# Coverage
+coverage/
+*.coverage
+*.coveragexml
+
+# Test results
+TestResults/
+*.trx
+
+# Database / local files
+*.db
+*.sqlite
+
+# OS
+.DS_Store
+Thumbs.db
