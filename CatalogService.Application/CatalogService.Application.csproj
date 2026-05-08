@@ -8,13 +8,13 @@
 
 <ItemGroup>
 <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
-<PackageReference Include="MediatR" Version="12.5.0" />
+
 <PackageReference Include="FluentValidation" Version="12.1.1" />
 <PackageReference Include="Mapster" Version="10.0.7" />
 <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.7" />
 </ItemGroup>
 <ItemGroup>
-
+  <ProjectReference Include="..\SharedKernel.Application\SharedKernel.Application.csproj" />
   <ProjectReference Include="..\CatalogService.Domain\CatalogService.Domain.csproj" />
   <ProjectReference Include="..\CatalogService.Infrastructure\CatalogService.Infrastructure.csproj" />
 </ItemGroup>

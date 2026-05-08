@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CatalogService.Infrastructure
 {
     public class QueryDbContext:DbContext
-    {
+    { //TODO: Add Read Model
         public QueryDbContext(DbContextOptions<QueryDbContext> options)
             : base(options)
         {

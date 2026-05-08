@@ -21,7 +21,7 @@ namespace CatalogService.Application
             {
                 cg.RegisterServicesFromAssemblies(assembly.Assembly);
             });
-
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
             return services;
         }
         

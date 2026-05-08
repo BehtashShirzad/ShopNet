@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CatalogService.Infrastructure.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260508125408_add-product-category")]
+    [DbContext(typeof(WriteDbContext))]
+    [Migration("20260508165212_add-product-category")]
     partial class addproductcategory
     {
         /// <inheritdoc />
