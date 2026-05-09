@@ -1,9 +1,9 @@
 <Solution>
   <Folder Name="/CatalogService/">
-    <Project Path="CatalogService.Api/CatalogService.Api.csproj" />
-    <Project Path="CatalogService.Domain/CatalogService.Domain.csproj" />
-    <Project Path="CatalogService.Application/CatalogService.Application.csproj" />
-    <Project Path="CatalogService.Infrastructure/CatalogService.Infrastructure.csproj" />
+    <Project Path="src/CatalogService.Api/CatalogService.Api.csproj" />
+    <Project Path="src/CatalogService.Domain/CatalogService.Domain.csproj" />
+    <Project Path="src/CatalogService.Application/CatalogService.Application.csproj" />
+    <Project Path="src/CatalogService.Infrastructure/CatalogService.Infrastructure.csproj" />
     <Project Path="../Building-Blocks/Application.Abstractions/Application.Abstractions.csproj" />
     <Project Path="../Building-Blocks/Domain.Abstractions/Domain.Abstractions.csproj" />
     <Project Path="../Building-Blocks/Infrastructure.Abstractions/Infrastructure.Abstractions.csproj" />

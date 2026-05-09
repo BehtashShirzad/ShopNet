@@ -14,7 +14,7 @@
 <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.7" />
 </ItemGroup>
 <ItemGroup>
-  <ProjectReference Include="..\..\Building-Blocks\Application.Abstractions\Application.Abstractions.csproj" />
+  <ProjectReference Include="..\..\..\Building-Blocks\Application.Abstractions\Application.Abstractions.csproj" />
   <ProjectReference Include="..\CatalogService.Domain\CatalogService.Domain.csproj" />
   <ProjectReference Include="..\CatalogService.Infrastructure\CatalogService.Infrastructure.csproj" />
 </ItemGroup>
