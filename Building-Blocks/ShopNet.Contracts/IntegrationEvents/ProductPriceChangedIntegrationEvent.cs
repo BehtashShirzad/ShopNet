@@ -5,6 +5,6 @@ using System.Threading.Tasks;
 
 namespace ShopNet.Contracts.IntegrationEvents
 {
-    public record ProductCreatedIntegrationEvent:IntegrationEvent;
+    public record ProductPriceChangedIntegrationEvent:IntegrationEvent;
     
 }

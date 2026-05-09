@@ -91,6 +91,7 @@ namespace CatalogService.Domain.Aggregates
             nameof(newPrice),
             ProductExceptionMessages.PriceMustBeGreaterThanZero);
 
+            RaiseEvent(new ProductPriceChangedDomainEvent(Id));
             Price = newPrice;
         }
 
