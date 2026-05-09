@@ -6,4 +6,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+<ItemGroup>
+     <ProjectReference Include="..\..\..\Building-Blocks\Domain.Abstractions\Domain.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ardalis.GuardClauses" Version="5.0.0" />
+  </ItemGroup>
 </Project>
