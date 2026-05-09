@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ShopNet.Contracts.IntegrationEvents
 {
-    public class ProductCreatedIntegrationEvent:IntegrationEvent
+    public record ProductCreatedIntegrationEvent:IntegrationEvent
     {
         
     }
