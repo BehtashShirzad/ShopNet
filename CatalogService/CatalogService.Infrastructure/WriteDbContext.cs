@@ -13,15 +13,15 @@ namespace CatalogService.Infrastructure
 {
     public class WriteDbContext:DbContext 
     {
-        private readonly IBus _bus;
+        private readonly IDomainEventBus _bus;
         private readonly ICurrentUser _currentUser;
-        public WriteDbContext(DbContextOptions<WriteDbContext> options,IBus bus,ICurrentUser currentUser)
+        public WriteDbContext(DbContextOptions<WriteDbContext> options,IDomainEventBus bus,ICurrentUser currentUser)
             : base(options)
         {
-            _bus = bus;
+       
           _currentUser = currentUser;
               ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
-            Bus = bus;
+            _bus = bus;
         }
 
 
@@ -72,6 +72,6 @@ var domainEvents = ChangeTracker.Entries()
     }
         public DbSet<ProductAggregate> Products { get; set; }
         public DbSet<CategoryEntity> Categories { get; set; }
-        public IBus Bus { get; }
+      
     }
 }

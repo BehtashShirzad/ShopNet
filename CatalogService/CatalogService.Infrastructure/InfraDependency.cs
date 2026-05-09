@@ -24,7 +24,8 @@ namespace CatalogService.Infrastructure
                 opt.UseSqlServer(configuration.GetConnectionString("CatalogServiceConnection"));
             });
            services.AddScoped<ICurrentUser, CurrentUser>();
-           services.AddScoped<IBus, Bus>();
+           services.AddScoped<IDomainEventBus, DomainEventBus>();
+           services.AddScoped<IIntegrationEventBus, IntegrationEventBus>();
  services.AddScoped<IDomainEventDispatcher, MediatrDomainEventDispatcher>();
 
         }

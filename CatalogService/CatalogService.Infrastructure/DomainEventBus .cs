@@ -6,10 +6,11 @@ using MediatR;
 using Application.Abstractions.Contracts;
 using Domain.Abstractions;
 using Application.Abstractions;
+using ShopNet.Contracts;
 
 namespace CatalogService.Infrastructure
 {
-    public class Bus(IDomainEventDispatcher dispatcher): IBus
+    public class DomainEventBus (IDomainEventDispatcher dispatcher): IDomainEventBus
     {
         public async Task PublishAsync<T>(T message, CancellationToken cancellationToken = default)
           where T : IDomainEvent
@@ -18,11 +19,6 @@ namespace CatalogService.Infrastructure
         await   dispatcher.DispatchAsync(message, cancellationToken);
       
         }
-
-        public Task PublishIntegrationMessage<T>(T message, CancellationToken cancellationToken = default)
-         where T : class
-        {
-            throw new NotImplementedException();
-        }
+ 
     }
 }
