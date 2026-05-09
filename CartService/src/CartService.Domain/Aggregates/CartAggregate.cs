@@ -6,7 +6,7 @@ using Domain.Abstractions;
 using CartService.Domain.Entities;
 using CartService.Domain.Exceptions;
 using Ardalis.GuardClauses;
-using CartService.Domain.DomainEvents;
+ 
 namespace CartService.Domain.Aggregates;
 
 public class CartAggregate : AggregateRoot<Guid>
@@ -31,7 +31,7 @@ public class CartAggregate : AggregateRoot<Guid>
         };
 
 
-        cart.RaiseEvent(new CartCreatedDomainEvent(cart.Id));
+        
         return cart;
     }
 
