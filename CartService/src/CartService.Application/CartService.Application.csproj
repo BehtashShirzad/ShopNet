@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+<ItemGroup>
+  <ProjectReference Include="..\..\..\Building-Blocks\Application.Abstractions\Application.Abstractions.csproj" />
+  <ProjectReference Include="../CartService.Domain/CartService.Domain.csproj"/>
+</ItemGroup>
 </Project>

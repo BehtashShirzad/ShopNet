@@ -8,6 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.6" />
+    <PackageReference Include="Mapster" Version="10.0.7" />
   </ItemGroup>
 
+
+<ItemGroup>
+<ProjectReference Include="../CartService.Application/CartService.Application.csproj"/>
+</ItemGroup>
 </Project>

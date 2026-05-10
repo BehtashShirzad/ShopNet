@@ -6,10 +6,10 @@ using MediatR;
 
 namespace Application.Abstractions;
 
-public interface ICommand { }
+public interface ICommand :IRequest{ }
 
-public interface ICommand<TResponse> : IRequest<TResponse>, ICommand { }
+public interface ICommand<TResponse> : IRequest<TResponse>{ }
 
-public interface ICommandVoid : IRequest, ICommand { }
+ 
 
 
