@@ -4,15 +4,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using Application.Abstractions.Contracts;
 using CartService.Application.Commands;
+using CartService.Domain;
 
 namespace CartService.Application.Query
 {
-    public record UserCartQuery(Guid UserId):IQuery<CartDto>;
-    public class UserCartQueryHandler : IQueryHandler<UserCartQuery, CartDto>
+    public record UserCartQuery(Guid CartId):IQuery<CartDto>;
+    public class UserCartQueryHandler(IRepository repository) : IQueryHandler<UserCartQuery, CartDto>
     {
         public async Task<CartDto> Handle(UserCartQuery request, CancellationToken cancellationToken)
         {
-            return  new CartDto(new List<ProductDto>(){new ProductDto(Guid.Empty,2,1000,"test")},22222);
+            var cart =   await repository.GetCart(request.CartId);
+            if(cart == null)
+            {
+             throw new Exception("Cart not found");
+            }
+            var prodocts = cart
+                            .Items
+                            .Select(i => new ProductDto(i.ProductId,i.Quantity,i.Price,i.ProductName))
+                            .ToList();
+            return new CartDto(prodocts, cart.TotalPrice);
         }
     }
 

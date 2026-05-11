@@ -6,7 +6,8 @@ using Domain.Abstractions;
 using CartService.Domain.Entities;
 using CartService.Domain.Exceptions;
 using Ardalis.GuardClauses;
- 
+using Newtonsoft.Json;
+
 namespace CartService.Domain.Aggregates;
 
 public class CartAggregate : AggregateRoot<Guid>
@@ -15,10 +16,13 @@ public class CartAggregate : AggregateRoot<Guid>
     {
 
     }
+    [JsonProperty]
     public Guid CustomerId { get; private set; }
+   
     private readonly List<CartItem> _items = new();
     public IReadOnlyCollection<CartItem> Items => _items;
-    public decimal TotalPrice { get; private set; }
+    public decimal TotalPrice => _items.Sum(i => i.Price * i.Quantity);
+
 
     public static CartAggregate Create(Guid customerId)
     {
@@ -27,7 +31,8 @@ public class CartAggregate : AggregateRoot<Guid>
         var cart = new CartAggregate
         {
             Id = IdGenerator.New(),
-            CustomerId = customerId
+            CustomerId = customerId,
+            CreatedAt = DateTime.UtcNow
         };
 
 
@@ -49,13 +54,13 @@ public class CartAggregate : AggregateRoot<Guid>
             _items.Add(item);
         }
 
-        RecalculateTotal();
+        // RecalculateTotal();
     }
 
-    void RecalculateTotal()
-    {
-        TotalPrice = _items.Sum(i => i.Price * i.Quantity);
-    }
+    // void RecalculateTotal()
+    // {
+    //     TotalPrice = _items.Sum(i => i.Price * i.Quantity);
+    // }
     public void RemoveItem(Guid productId)
     {
         var item = _items.FirstOrDefault(x => x.ProductId == productId);
@@ -65,7 +70,7 @@ public class CartAggregate : AggregateRoot<Guid>
 
         _items.Remove(item);
 
-        RecalculateTotal();
+        // RecalculateTotal();
     }
 
     public void ChangeItemQuantity(Guid productId, int quantity)
@@ -76,7 +81,7 @@ public class CartAggregate : AggregateRoot<Guid>
 
         item.ChangeQuantity(quantity);
 
-        RecalculateTotal();
+        // RecalculateTotal();
     }
 
 

@@ -3,13 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Ardalis.GuardClauses;
+using Newtonsoft.Json;
 namespace CartService.Domain.Entities
 {
     public class CartItem
     {
         
         private CartItem() { }
-
+    
+    [JsonConstructor]
+    private CartItem(Guid productId, string productName, decimal price, int quantity)
+    {
+        ProductId = productId;
+        ProductName = productName;
+        Price = price;
+        Quantity = quantity;
+    }
+    
         public Guid ProductId { get; private set; }
         public string ProductName { get; private set; } = null!;
         public decimal Price { get; private set; }

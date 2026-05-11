@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "name": "CatalogService",
+      "path": "CatalogService"
+    },
+    {
+      "name": "CartService",
+      "path": "CartService"
+    },
+    {
+      "name": "Building-Blocks",
+      "path": "Building-Blocks"
+    }
+  ]
+}

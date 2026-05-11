@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/Building-Blocks/">
+    <Project Path="Building-Blocks/Application.Abstractions/Application.Abstractions.csproj" />
+    <Project Path="Building-Blocks/Domain.Abstractions/Domain.Abstractions.csproj" />
+    <Project Path="Building-Blocks/Infrastructure.Abstractions/Infrastructure.Abstractions.csproj" />
+    <Project Path="Building-Blocks/ShopNet.Contracts/ShopNet.Contracts.csproj" />
+  </Folder>
+  <Folder Name="/CartService/" />
+  <Folder Name="/CartService/src/">
+    <Project Path="CartService/src/CartService.Api/CartService.Api.csproj" />
+    <Project Path="CartService/src/CartService.Application/CartService.Application.csproj" />
+    <Project Path="CartService/src/CartService.Domain/CartService.Domain.csproj" />
+    <Project Path="CartService/src/CartService.Infrastructure/CartService.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/CatalogService/" />
+  <Folder Name="/CatalogService/src/">
+    <Project Path="CatalogService/src/CatalogService.Api/CatalogService.Api.csproj" />
+    <Project Path="CatalogService/src/CatalogService.Application/CatalogService.Application.csproj" />
+    <Project Path="CatalogService/src/CatalogService.Domain/CatalogService.Domain.csproj" />
+    <Project Path="CatalogService/src/CatalogService.Infrastructure/CatalogService.Infrastructure.csproj" />
+  </Folder>
+</Solution>

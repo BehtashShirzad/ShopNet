@@ -13,24 +13,27 @@ namespace CartService.Api
         {
             var map = endpoint.MapGroup("cart");
             map.MapPost("/items", AddCart);
-            map.MapGet("",GetCartItems);
-            map.MapPut("/items",AddProductToCart);
+            map.MapGet("/{cartId}",GetCartItems);
+            map.MapPut("/items/{cartId}",AddProductToCart);
             return map;
         }
 
-        private static async Task<IResult> AddProductToCart([FromBody]ProductDto dto,[FromServices]ISender sender,[FromServices]IHttpContextAccessor contextAccessor)
+        private static async Task<IResult> AddProductToCart([FromBody]ProductDto dto,
+        [FromServices]ISender sender,[FromServices]IHttpContextAccessor contextAccessor,[FromRoute] Guid cartId)
         {
            var mapped = dto.Adapt<AddProductToCartCommand>();
             mapped.UserId = contextAccessor.GetUserId();
+            mapped.CartId = cartId;
+            mapped.ProductDto = dto;
             await sender.Send(mapped);
             return TypedResults.Ok();
         }
 
-        private static async Task<IResult> GetCartItems([FromServices]ISender sender,
+        private static async Task<IResult> GetCartItems([FromServices]ISender sender,[FromRoute]Guid cartId,
         [FromServices]IHttpContextAccessor httpContextAccessor)
         {
               var cart = await sender.Send(
-        new UserCartQuery(httpContextAccessor.GetUserId())
+        new UserCartQuery(cartId)
                     );
 
     return Results.Ok(cart);
@@ -41,8 +44,8 @@ namespace CartService.Api
         {
             var mapped = dto.Adapt<AddCartCommand>();
             mapped.UserId = contextAccessor.GetUserId();
-            await sender.Send(mapped);
-            return TypedResults.Created();
+            var cartId = await sender.Send(mapped);
+            return TypedResults.Ok(cartId);
              
         }
     }
