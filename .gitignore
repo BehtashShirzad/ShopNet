@@ -111,3 +111,5 @@ TestResults/
 # OS
 .DS_Store
 Thumbs.db
+
+shopnet.code-workspace
