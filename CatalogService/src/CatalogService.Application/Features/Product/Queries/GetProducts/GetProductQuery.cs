@@ -1,15 +1,17 @@
 ﻿using CatalogService.Application.Features.Product.CreateProduct;
+using CatalogService.Infrastructure;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CatalogService.Application.Features.Product.Queries.GetProducts;
 
-public record GetProductQuery : IRequest<CreateProductCommandResponse>;
+public record GetProductsQuery : IRequest<List<CreateProductCommandResponse>>;
 
-public class GetProductQueryHandler : IRequestHandler<GetProductQuery,CreateProductCommandResponse>
+public class GetProductsQueryHandler (QueryDbContext queryDbContext): IRequestHandler<GetProductsQuery,List<CreateProductCommandResponse>>
 {
-    public async Task<CreateProductCommandResponse> Handle(GetProductQuery request, CancellationToken cancellationToken)
+    public async Task<List<CreateProductCommandResponse>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
     {
-        return new CreateProductCommandResponse( "GetProductQuery","",2);
+        return queryDbContext.Products.AsNoTracking().Select(p => new CreateProductCommandResponse( p.Name, p.Description??string.Empty,p.Price)).ToList();
     }
 }
  

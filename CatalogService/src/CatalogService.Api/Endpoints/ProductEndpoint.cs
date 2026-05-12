@@ -45,7 +45,7 @@ namespace CatalogService.Api.Routes
         private static async Task<IResult> GetProducts([FromServices] IMediator mediator)
         {
 
-            var product = await mediator.Send(new GetProductQuery());
+            var product = await mediator.Send(new GetProductsQuery());
             return TypedResults.Ok(product);
         }
 
