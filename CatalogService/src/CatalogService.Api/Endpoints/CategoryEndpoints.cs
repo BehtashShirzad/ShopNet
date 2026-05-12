@@ -29,10 +29,10 @@ namespace CatalogService.Api.Endpoints
             return TypedResults.BadRequest();
         }
 
-        private static async Task CraeteCategory([FromBody] CreateCategoryCommand command, [FromServices] IMediator mediator)
+        private static async Task<IResult> CraeteCategory([FromBody] CreateCategoryCommand command, [FromServices] IMediator mediator)
         {
             var category =await mediator.Send(command);
-            TypedResults.Ok(category);
+          return  TypedResults.Ok(category);
         }
     }
 }

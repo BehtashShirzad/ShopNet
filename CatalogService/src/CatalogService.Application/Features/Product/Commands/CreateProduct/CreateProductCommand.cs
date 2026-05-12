@@ -21,14 +21,23 @@ namespace CatalogService.Application.Features.Product.CreateProduct
     {
         public async Task<CreateProductCommandResponse> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
-            var isExists = await dbContext.Categories.AnyAsync(_=> _.Id == request.CategoryId, cancellationToken);
-            if (!isExists)
-                throw new Exception("Category not found");
+            var validationData = await dbContext.Categories
+            .AsNoTracking()
+            .Where(c => c.Id == request.CategoryId)
+            .Select(c => new 
+            { 
+                CategoryExists = true,
+                ProductNameCount = dbContext.Products
+                    .AsNoTracking()
+                    .Count(p => p.Name == request.Name && p.CategoryId == request.CategoryId)
+            })
+            .FirstOrDefaultAsync(cancellationToken);
+              if (validationData == null)
+            throw new Exception($"Category '{request.CategoryId}' not found");
 
-            var isProductNameExists = await dbContext.Products.AnyAsync(_ => _.Name == request.Name, cancellationToken);
-            if (isProductNameExists)
-                throw new Exception("Product name already exists");
-            
+        if (validationData.ProductNameCount > 0)
+            throw new Exception($"Product '{request.Name}' already exists in this category");
+
            var product = ProductAggregate.Create(request.CategoryId,request.Name,request.Description,request.Price);
             await dbContext.Products.AddAsync(product);
           

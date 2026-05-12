@@ -18,7 +18,7 @@ namespace CartService.Api
             return map;
         }
 
-        private static async Task<IResult> AddProductToCart([FromBody]ProductDto dto,
+        private static async Task<IResult> AddProductToCart([FromBody]ProductViewModelInput dto,
         [FromServices]ISender sender,[FromServices]IHttpContextAccessor contextAccessor,[FromRoute] Guid cartId)
         {
            var mapped = dto.Adapt<AddProductToCartCommand>();
