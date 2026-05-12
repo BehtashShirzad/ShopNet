@@ -11,13 +11,13 @@ namespace CartService.Application.Commands
 { 
 
   
-    public record AddCartCommand(List<ProductDto> Products) : ICommand<Guid>
+    public record AddCartCommand(List<ProductViewModelInput> Products) : ICommand<Guid>
     {
         public Guid UserId{get;set;}
 
     }
 
-    public class AddCartCommandHandler(IRepository repository) : 
+    public class AddCartCommandHandler(IRepository repository,ICatalogService catalogService) : 
     ICommandHandler<AddCartCommand,Guid>
     {
         public async Task<Guid> Handle(AddCartCommand request, CancellationToken cancellationToken)
@@ -25,7 +25,10 @@ namespace CartService.Application.Commands
           var cart = CartAggregate.Create(request.UserId);
           foreach(var item in request.Products)
             {
-                // Better To Get Products From CatalogService
+                var product = catalogService.GetProduct(item.ProductId);
+                if(product is null)
+                 throw new Exception("Product Not Found");
+
                 cart.AddItem(item.ProductId,item.ProductName,item.Price,item.Quantity);
             }
 

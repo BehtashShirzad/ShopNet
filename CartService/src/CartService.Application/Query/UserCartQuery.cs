@@ -20,7 +20,7 @@ namespace CartService.Application.Query
             }
             var prodocts = cart
                             .Items
-                            .Select(i => new ProductDto(i.ProductId,i.Quantity,i.Price,i.ProductName))
+                            .Select(i => new ProductViewModelOutput(i.ProductId,i.Quantity,i.Price,i.ProductName))
                             .ToList();
             return new CartDto(prodocts, cart.TotalPrice);
         }

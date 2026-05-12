@@ -16,17 +16,20 @@ namespace CartService.Application.Commands
         public Guid UserId{get;set;}
         [JsonIgnore]
         public Guid CartId{get;set;}
-        public ProductDto ProductDto{get;set;}=null!;
+        public ProductViewModelInput ProductDto{get;set;}=null!;
     }
-    public class AddProductToCartCommandHandler(IRepository repository) : ICommandHandler<AddProductToCartCommand>
+    public class AddProductToCartCommandHandler(IRepository repository,ICatalogService catalogService) : ICommandHandler<AddProductToCartCommand>
     {
         public async Task Handle(AddProductToCartCommand request, CancellationToken cancellationToken)
         {
-            //fetch cart
+           
               
               var cart = await repository.GetCart(request.CartId);
         if(cart is null)
         throw new Exception("Cart not found");
+         var product = catalogService.GetProduct(request.ProductDto.ProductId);
+                if(product is null)
+                 throw new Exception("Product Not Found");
             cart.AddItem(request.ProductDto.ProductId,
             request.ProductDto.ProductName,
             request.ProductDto.Price,
