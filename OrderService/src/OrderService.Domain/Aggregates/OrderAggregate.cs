@@ -23,7 +23,7 @@ namespace OrderService.Domain.Aggregates
         
        
 
-        public static OrderAggregate Creat(Guid customerId)
+        public static OrderAggregate Create(Guid customerId)
         {
             
             return new OrderAggregate()
