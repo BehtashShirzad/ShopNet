@@ -15,6 +15,7 @@ namespace CartService.Api
             map.MapPost("/items", AddCart);
             map.MapGet("/{cartId}",GetCartItems);
             map.MapPut("/items/{cartId}",AddProductToCart);
+            map.MapPost("/checkout/{cartId}",Checkout);
             return map;
         }
 
@@ -33,7 +34,7 @@ namespace CartService.Api
         [FromServices]IHttpContextAccessor httpContextAccessor)
         {
               var cart = await sender.Send(
-        new UserCartQuery(cartId)
+        new UserCartQuery(cartId,httpContextAccessor.GetUserId())
                     );
 
     return Results.Ok(cart);
@@ -47,6 +48,16 @@ namespace CartService.Api
             var cartId = await sender.Send(mapped);
             return TypedResults.Ok(cartId);
              
+        }
+
+        private static async Task<IResult> Checkout([FromRoute]Guid CartId,[FromServices]IHttpContextAccessor contextAccessor,[FromServices]ISender sender)
+        {
+            
+            var userId = contextAccessor.GetUserId();
+            var command   =  new CheckoutCartCommand(CartId,userId);
+            var result =await sender.Send(command);
+            return TypedResults.Ok(result);
+
         }
     }
 }

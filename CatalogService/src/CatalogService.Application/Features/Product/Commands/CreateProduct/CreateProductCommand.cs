@@ -13,7 +13,7 @@ using Application.Abstractions;
 namespace CatalogService.Application.Features.Product.CreateProduct
 {
 
-    public record CreateProductCommand(Guid  CategoryId,string Name, string Description,decimal Price)
+    public record CreateProductCommand(Guid  CategoryId,string Name, string Description,decimal Price,int Stock)
     :ICommand<CreateProductCommandResponse>;
     public record CreateProductCommandResponse(string Name,string Description,decimal Price);
 
@@ -38,7 +38,7 @@ namespace CatalogService.Application.Features.Product.CreateProduct
         if (validationData.ProductNameCount > 0)
             throw new Exception($"Product '{request.Name}' already exists in this category");
 
-           var product = ProductAggregate.Create(request.CategoryId,request.Name,request.Description,request.Price);
+           var product = ProductAggregate.Create(request.CategoryId,request.Name,request.Description,request.Price,request.Stock);
             await dbContext.Products.AddAsync(product);
           
              

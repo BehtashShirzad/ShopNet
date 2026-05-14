@@ -22,7 +22,8 @@ public class CartAggregate : AggregateRoot<Guid>
     private readonly List<CartItem> _items = new();
     public IReadOnlyCollection<CartItem> Items => _items;
     public decimal TotalPrice => _items.Sum(i => i.Price * i.Quantity);
-
+    [JsonProperty]
+    public bool IsCheckedOut{get;private set;}
 
     public static CartAggregate Create(Guid customerId)
     {
@@ -54,13 +55,10 @@ public class CartAggregate : AggregateRoot<Guid>
             _items.Add(item);
         }
 
-        // RecalculateTotal();
+        
     }
 
-    // void RecalculateTotal()
-    // {
-    //     TotalPrice = _items.Sum(i => i.Price * i.Quantity);
-    // }
+    
     public void RemoveItem(Guid productId)
     {
         var item = _items.FirstOrDefault(x => x.ProductId == productId);
@@ -70,7 +68,7 @@ public class CartAggregate : AggregateRoot<Guid>
 
         _items.Remove(item);
 
-        // RecalculateTotal();
+       
     }
 
     public void ChangeItemQuantity(Guid productId, int quantity)
@@ -81,7 +79,12 @@ public class CartAggregate : AggregateRoot<Guid>
 
         item.ChangeQuantity(quantity);
 
-        // RecalculateTotal();
+        
+    }
+
+    public void Checkout()
+    {
+        IsCheckedOut=true;
     }
 
 

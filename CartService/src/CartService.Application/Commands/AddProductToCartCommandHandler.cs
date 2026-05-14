@@ -27,6 +27,8 @@ namespace CartService.Application.Commands
               var cart = await repository.GetCart(request.CartId);
         if(cart is null)
         throw new Exception("Cart not found");
+          if(cart.CustomerId!= request.UserId)
+                throw new Exception("Cart not found");
          var product = catalogService.GetProduct(request.ProductDto.ProductId);
                 if(product is null)
                  throw new Exception("Product Not Found");

@@ -19,4 +19,10 @@
     <Project Path="CatalogService/src/CatalogService.Domain/CatalogService.Domain.csproj" />
     <Project Path="CatalogService/src/CatalogService.Infrastructure/CatalogService.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/OrderService/">
+    <Project Path="OrderService/src/OrderService.Api/OrderService.Api.csproj" />
+    <Project Path="OrderService/src/OrderService.Application/OrderService.Application.csproj" />
+    <Project Path="OrderService/src/OrderService.Domain/OrderService.Domain.csproj" />
+    <Project Path="OrderService/src/OrderService.Infrastructure/OrderService.Infrastructure.csproj" />
+  </Folder>
 </Solution>

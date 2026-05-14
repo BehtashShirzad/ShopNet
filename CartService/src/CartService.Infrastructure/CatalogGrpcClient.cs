@@ -30,7 +30,8 @@ namespace CartService.Infrastructure
         return new GetProductDto(
             Guid.Parse(response.Id),
             response.Name,
-            (decimal)response.Price);
+            (decimal)response.Price,
+            response.Stock);
     }
 }
 

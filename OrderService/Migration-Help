@@ -1,0 +1,2 @@
+dotnet ef migrations add  add-order  --startup-project .\OrderService.Api\ -p .\OrderService.Infrastructure\ -c WriteDbContext
+dotnet ef  database update --startup-project .\OrderService.Api\ -p .\OrderService.Infrastructure\ -c WriteDbContext

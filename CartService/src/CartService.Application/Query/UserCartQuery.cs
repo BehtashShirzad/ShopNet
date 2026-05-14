@@ -8,7 +8,7 @@ using CartService.Domain;
 
 namespace CartService.Application.Query
 {
-    public record UserCartQuery(Guid CartId):IQuery<CartDto>;
+    public record UserCartQuery(Guid CartId,Guid UserId):IQuery<CartDto>;
     public class UserCartQueryHandler(IRepository repository) : IQueryHandler<UserCartQuery, CartDto>
     {
         public async Task<CartDto> Handle(UserCartQuery request, CancellationToken cancellationToken)
@@ -18,6 +18,9 @@ namespace CartService.Application.Query
             {
              throw new Exception("Cart not found");
             }
+
+            if(cart.CustomerId!= request.UserId)
+                throw new Exception("Cart not found");
             var prodocts = cart
                             .Items
                             .Select(i => new ProductViewModelOutput(i.ProductId,i.Quantity,i.Price,i.ProductName))
