@@ -44,13 +44,13 @@ namespace OrderService.Domain.Aggregates
             if (Status != OrderStatus.Pending)
                 throw new InvalidOperationException("Cannot modify order");
 
-            if (quantity <= 0)
+          
                 
-                Guard.Against.NullOrOutOfRange(quantity,nameof(quantity), 1, int.MaxValue, "Quantity must be greater than zero");
+            Guard.Against.NullOrOutOfRange(quantity,nameof(quantity), 1, int.MaxValue, "Quantity must be greater than zero");
               
 
-            if (price <= 0)
-               Guard.Against.NullOrOutOfRange(price,nameof(price), 0.01m, decimal.MaxValue, "Price must be greater than zero");
+            
+            Guard.Against.NullOrOutOfRange(price,nameof(price), 0.01m, decimal.MaxValue, "Price must be greater than zero");
 
             _items.Add(new OrderItem(productId, name, price, quantity));
         }
