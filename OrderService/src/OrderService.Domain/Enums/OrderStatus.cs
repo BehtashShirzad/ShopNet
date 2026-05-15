@@ -7,7 +7,7 @@ namespace OrderService.Domain.Enums
 {
 public enum OrderStatus
 {
-    Created = 0,
+    
     Pending = 1,
     InventoryReserved = 2,
     PaymentProcessing = 3,

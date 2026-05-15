@@ -11,9 +11,11 @@
 <PackageReference Include="FluentValidation" Version="12.1.1" />
 <PackageReference Include="Mapster" Version="10.0.7" />
 <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.7" />
+<PackageReference Include="MassTransit" Version="8.3.6" />
   </ItemGroup>
 <ItemGroup>
   <ProjectReference Include="..\..\..\Building-Blocks\Application.Abstractions\Application.Abstractions.csproj" />
-  
+  <ProjectReference Include="..\OrderService.Domain\OrderService.Domain.csproj" />
+  <ProjectReference Include="..\OrderService.Infrastructure\OrderService.Infrastructure.csproj" />
 </ItemGroup>
 </Project>
