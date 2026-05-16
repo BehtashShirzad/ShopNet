@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ShopNet.Contracts.SharedDtos
 {
-    public record CartItemDto(Guid ProductId,
+    public record ProductDto(Guid ProductId,
       string  ProductName,
       decimal  Price,
      int   Quantity);

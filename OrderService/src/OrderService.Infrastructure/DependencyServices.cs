@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Abstractions;
+using Application.Abstractions.Contracts;
 using Domain.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,7 +23,8 @@ namespace OrderService.Infrastructure
                 services.AddScoped<IUnitOfWork, WriteDbContext>();
 
                 services.AddScoped<IOrderRepository, OrderRepository>();
-           
+                 services.AddScoped<IDomainEventDispatcher, MediatrDomainEventDispatcher>();
+           services.AddScoped<IIntegrationEventBus,Bus>();
         }
         
     }

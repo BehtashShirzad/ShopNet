@@ -11,7 +11,7 @@ namespace OrderService.Application.Commands
 {
     public record CreateOrderCommand( Guid CartId,
     Guid CustomerId,
-    List<CartItemDto> Items,
+    List<ProductDto> Items,
     decimal TotalPrice):ICommand;
     public class CreateOrderCommandHandler : ICommandHandler<CreateOrderCommand>
     {

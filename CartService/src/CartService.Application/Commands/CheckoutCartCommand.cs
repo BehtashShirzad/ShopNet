@@ -38,7 +38,7 @@ namespace CartService.Application.Commands
                             cart.Id,
                             cart.CustomerId,
                             cart.Items.Select(item =>
-                                new CartItemDto(
+                                new ProductDto(
                                     item.ProductId,
                                     item.ProductName,
                                     item.Price,

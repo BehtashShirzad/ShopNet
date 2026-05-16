@@ -35,7 +35,7 @@ namespace OrderService.Domain.Aggregates
              CustomerId = customerId,
              CartId = cartId
             };
-            order.RaiseEvent(new OrderCreatedDomainEvent(order.Id));
+            order.RaiseEvent(new OrderCreatedDomainEvent(order.Id,order.Items.ToList(),order.CustomerId));
             return order;
         }
 
