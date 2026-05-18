@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using CatalogService.Domain.Entities;
 using MediatR;
 using Application.Abstractions;
+using Application.Abstractions.Contracts;
 
 namespace CatalogService.Application.Features.Category.Commands.UpdateCategory
 {
     public record UpdateCategoryCommand(Guid Id,string NewName):ICommand<bool>;
 
-    public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryCommand, bool>
+    public class UpdateCategoryCommandHandler : ICommandHandler<UpdateCategoryCommand, bool>
     {
         public async Task<bool> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
         {

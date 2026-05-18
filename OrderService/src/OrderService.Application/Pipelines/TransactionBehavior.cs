@@ -1,44 +1,38 @@
 
 using System.Runtime.CompilerServices;
-using OrderService.Infrastructure;
+
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Application.Abstractions;
+using Application.Abstractions.Contracts;
+
 namespace OrderService.Application.Pipelines
 {
 
 
-public class TransactionBehavior<TRequest, TResponse> 
+public class TransactionBehavior<TRequest, TResponse>(IApplicationDbContext context)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
-    private readonly WriteDbContext _context;
-
-    public TransactionBehavior(WriteDbContext context)
-    {
-        _context = context;
-    }
-
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        if (request is not ICommand)
-    return await next();
-
+        if (request is not IBaseCommand)
+            return await next();
         
-        if (_context.Database.CurrentTransaction != null)
+        if (context.Database.CurrentTransaction != null)
             return await next();
 
         await using var transaction = 
-            await _context.Database.BeginTransactionAsync(cancellationToken);
+            await context.Database.BeginTransactionAsync(cancellationToken);
 
         try
         {
             var response = await next();
 
-            await _context.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
 
             await transaction.CommitAsync(cancellationToken);
 

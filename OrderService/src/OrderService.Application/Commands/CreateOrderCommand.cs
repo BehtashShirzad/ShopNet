@@ -22,7 +22,7 @@ namespace OrderService.Application.Commands
         }
         public async Task Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
-            var existing = await _repository.GetByCartId(request.CartId);
+            var existing = await _repository.GetByCartId(request.CartId); //TODO : No Need Remove 
             if (existing != null)
                 return; 
             var order =   OrderAggregate.Create(request.CustomerId,request.CartId);

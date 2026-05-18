@@ -1,37 +1,33 @@
 
 using System.Runtime.CompilerServices;
-using CatalogService.Infrastructure;
+ 
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Application.Abstractions;
-namespace CatalogService.Application.Pipelines
-{
+using Application.Abstractions.Contracts;
+
+namespace CatalogService.Application.Pipelines;
+ 
 
 
-public class TransactionBehavior<TRequest, TResponse> 
+public class TransactionBehavior<TRequest, TResponse>(IApplicationDbContext context)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
-    private readonly WriteDbContext _context;
-
-    public TransactionBehavior(WriteDbContext context)
-    {
-        _context = context;
-    }
-
+    private readonly IApplicationDbContext _context = context;
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        if (request is not ICommand)
-    return await next();
+         
+        if (request is not IBaseCommand)
+            return await next();
 
-        
         if (_context.Database.CurrentTransaction != null)
             return await next();
 
-        await using var transaction = 
+        await using var transaction =
             await _context.Database.BeginTransactionAsync(cancellationToken);
 
         try
@@ -53,4 +49,4 @@ public class TransactionBehavior<TRequest, TResponse>
  
 }
 
-}
+ 

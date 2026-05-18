@@ -9,7 +9,7 @@ using OrderService.Domain.Aggregates;
 
 namespace OrderService.Infrastructure
 {
-   public class WriteDbContext : DbContext,IUnitOfWork
+   public class WriteDbContext : DbContext,IUnitOfWork, IApplicationDbContext
 {
     public DbSet<OrderAggregate> Orders => Set<OrderAggregate>();
 

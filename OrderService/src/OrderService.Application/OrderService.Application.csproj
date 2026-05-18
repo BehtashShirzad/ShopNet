@@ -16,6 +16,6 @@
 <ItemGroup>
   <ProjectReference Include="..\..\..\Building-Blocks\Application.Abstractions\Application.Abstractions.csproj" />
   <ProjectReference Include="..\OrderService.Domain\OrderService.Domain.csproj" />
-  <ProjectReference Include="..\OrderService.Infrastructure\OrderService.Infrastructure.csproj" />
+<!--  <ProjectReference Include="..\OrderService.Infrastructure\OrderService.Infrastructure.csproj" />-->
 </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CatalogService.Application.Features.Product.Commands.CreateProduct;
 using CatalogService.Application.Features.Product.Commands.UpdateProduct;
 using CatalogService.Application.Features.Product.CreateProduct;
 using CatalogService.Application.Features.Product.Queries.GetProducts;

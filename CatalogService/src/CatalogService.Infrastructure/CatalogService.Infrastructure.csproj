@@ -7,6 +7,7 @@
   </PropertyGroup>
     <ItemGroup>
       <ProjectReference Include="..\CatalogService.Domain\CatalogService.Domain.csproj" />
+        <ProjectReference Include="..\CatalogService.Application\CatalogService.Application.csproj" />
          <ProjectReference Include="..\..\..\Building-Blocks\Application.Abstractions\Application.Abstractions.csproj" />
          <ProjectReference Include="..\..\..\Building-Blocks\Infrastructure.Abstractions\Infrastructure.Abstractions.csproj" />
          <ProjectReference Include="..\..\..\Building-Blocks\ShopNet.Contracts\ShopNet.Contracts.csproj" />

@@ -16,7 +16,7 @@
 <ItemGroup>
   <ProjectReference Include="..\..\..\Building-Blocks\Application.Abstractions\Application.Abstractions.csproj" />
   <ProjectReference Include="..\CatalogService.Domain\CatalogService.Domain.csproj" />
-  <ProjectReference Include="..\CatalogService.Infrastructure\CatalogService.Infrastructure.csproj" />
+<!--  <ProjectReference Include="..\CatalogService.Infrastructure\CatalogService.Infrastructure.csproj" />-->
 </ItemGroup>
 <ItemGroup>
   <Folder Include="Features\Product\Commands\" />

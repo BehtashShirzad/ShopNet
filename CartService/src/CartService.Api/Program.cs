@@ -17,6 +17,17 @@ builder.Services.AddApplicationServices();
  
  builder.Services.AddHttpContextAccessor();
  builder.Host.UseSerilog();
+ builder.WebHost.ConfigureKestrel(options =>
+ {
+     options.ListenLocalhost(60003, o =>
+     {
+         o.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
+     });
+     options.ListenLocalhost(6003, o =>
+     {
+         o.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1;
+     });
+ });
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

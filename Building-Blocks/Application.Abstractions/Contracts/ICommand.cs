@@ -1,15 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 
-namespace Application.Abstractions;
+namespace Application.Abstractions.Contracts;
 
-public interface ICommand :IRequest{ }
+ 
+ 
+ 
+public interface IBaseCommand { } 
 
-public interface ICommand<TResponse> : IRequest<TResponse>{ }
+ 
+public interface ICommand : IRequest, IBaseCommand { }
 
+ 
+public interface ICommand<out TResponse> : IRequest<TResponse>, IBaseCommand { }
  
 
 

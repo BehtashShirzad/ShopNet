@@ -8,6 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Application.Abstractions.Contracts;
 using Application.Abstractions;
+using CatalogService.Domain;
+using MassTransit;
+
 namespace CatalogService.Infrastructure
 {
     public static class InfraDependency
@@ -25,9 +28,35 @@ namespace CatalogService.Infrastructure
             });
            services.AddScoped<ICurrentUser, CurrentUser>();
            services.AddScoped<IDomainEventBus, DomainEventBus>();
-           services.AddScoped<IIntegrationEventBus, IntegrationEventBus>();
- services.AddScoped<IDomainEventDispatcher, MediatrDomainEventDispatcher>();
+           services.AddScoped<IIntegrationEventBus, Bus>();
+             services.AddScoped<IDomainEventDispatcher, MediatrDomainEventDispatcher>();
+             services.AddScoped<IApplicationDbContext, WriteDbContext>();
+             services.AddScoped<IProductWriteRepository,ProductWriteRepository>();
+             services.AddScoped<ICategoryWriteRepository,CategoryWriteRepository>();
+             services.AddScoped<ICategoryReadRepository, CategoryReadRepository>();
+             services.AddScoped<IProductReadRepository, ProductReadRepository>();
+             services.AddMassTransit(x =>
+             {
+                 x.AddConsumers(typeof(Application.DependencyInjection).Assembly);
+                 x.SetKebabCaseEndpointNameFormatter();
+                    
+                 x.UsingRabbitMq((context, rcfg) =>
+                 {
+                     var rabbit = configuration.GetSection("RabbitMq");
+                        
+                     rcfg.Host(
+                         rabbit["Host"],
+                         ushort.Parse(rabbit["Port"]),
+                         rabbit["VirtualHost"],
+                         h =>
+                         {
+                             h.Username(rabbit["Username"]);
+                             h.Password(rabbit["Password"]);
+                         });
 
+                     rcfg.ConfigureEndpoints(context);
+                 });
+             });
         }
         
     }

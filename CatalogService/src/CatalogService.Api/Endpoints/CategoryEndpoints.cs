@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CatalogService.Application.Features.Category.Commands;
+using CatalogService.Application.Features.Category.Commands.CreateCategory;
 using CatalogService.Application.Features.Category.Commands.UpdateCategory;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

@@ -7,11 +7,13 @@ using CatalogService.Domain.Aggregates;
 using CatalogService.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Application.Abstractions.Contracts;
+using CatalogService.Domain;
 using Domain.Abstractions;
 
 namespace CatalogService.Infrastructure
 {
-    public class WriteDbContext:DbContext 
+    public class WriteDbContext:DbContext ,IApplicationDbContext
+
     {
         private readonly IDomainEventBus _bus;
         private readonly ICurrentUser _currentUser;

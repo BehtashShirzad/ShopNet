@@ -4,6 +4,7 @@ using CatalogService.Application;
 using CatalogService.Infrastructure;
 using Serilog;
 using Application.Abstractions.Contracts;
+using CatalogService.Api.Grpc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationServices();
+builder.Services.AddGrpc();
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .WriteTo.Console()               
@@ -19,6 +21,17 @@ Log.Logger = new LoggerConfiguration()
 builder.Services.AddInfraService(builder.Configuration);
 builder.Host.UseSerilog();
 builder.Services.AddHttpContextAccessor();
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenLocalhost(60002, o =>
+    {
+        o.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
+    });
+    options.ListenLocalhost(6002, o =>
+    {
+        o.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1;
+    });
+});
 
 
 var app = builder.Build();
@@ -36,7 +49,7 @@ app.UseHttpsRedirection();
 
 app.MapProductEndpoints();
 app.MapCategoryEndpoints();
- 
+app.MapGrpcService<CatalogServiceGrpcService>(); 
 app.Run();
 
  
