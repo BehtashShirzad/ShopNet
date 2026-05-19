@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Application.Abstractions.Contracts;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,11 @@ namespace OrderService.Infrastructure
         public async Task<OrderAggregate?> GetByCartId(Guid cartId)
         {
              return await _context.Set<OrderAggregate>().Where(o => o.CartId == cartId).FirstOrDefaultAsync();
+        }
+
+        public Task<OrderAggregate?> GetAsync(Expression<Func<OrderAggregate, bool>> predicate)
+        {
+            return   _context.Set<OrderAggregate>().AsNoTracking().Where(predicate).FirstOrDefaultAsync();
         }
 
         public async Task<OrderAggregate?> GetByIdAsync(Guid id)

@@ -1,4 +1,5 @@
 
+using OrderService.Api;
 using OrderService.Application;
 using OrderService.Infrastructure;
 using Serilog;
@@ -30,7 +31,7 @@ builder.WebHost.ConfigureKestrel(options =>
     });
 });
 var app = builder.Build();
-
+app.MapEndpoint();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

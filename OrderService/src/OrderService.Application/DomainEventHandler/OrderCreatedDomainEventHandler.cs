@@ -31,7 +31,7 @@ namespace OrderService.Application.DomainEventHandler;
                 notification.DomainEvent.OrderId, notification.DomainEvent.CustomerId,
                 items
             );
-          await  integrationEventBus.PublishAsync(integrationEvent);
+          await  integrationEventBus.PublishAsync(integrationEvent,cancellationToken);
 
         }
     }
