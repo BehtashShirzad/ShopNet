@@ -3,51 +3,14 @@
 ShopNet is a C# microservices sample implementing a modular e‑commerce platform with separated services for catalog, cart, and orders plus shared building blocks (contracts and abstractions). It's aimed at developers learning how to structure domain, application, and infrastructure concerns across multiple services and reuse common building-block libraries.
 
 ## Stack
-- Language(s): C# (100%)
-- Framework / runtime: .NET (see each service csproj for exact TargetFramework)
+- Language(s): C# 
+- Framework / runtime: .NET 
 - Notable libraries (examples you will find across services):
   - Entity Framework Core for persistence and migrations
   - A logging framework (e.g., Serilog) for structured logging
   - API toolkits for building Web APIs and exposing OpenAPI/Swagger
   - Internal contracts and abstractions shared via Building-Blocks/ShopNet.Contracts
 
-## How it's organized
-```
-Building-Blocks/                 shared libraries (contracts, abstractions)
-  Application.Abstractions/
-  Domain.Abstractions/
-  Infrastructure.Abstractions/
-  ShopNet.Contracts/
-
-CartService/                     cart microservice solution
-  CartService.slnx
-  src/
-    CartService.Api/
-    CartService.Application/
-    CartService.Domain/
-    CartService.Infrastructure/
-
-CatalogService/                  catalog microservice solution
-  CatalogService.slnx
-  Migration-help.md               notes for running migrations
-  src/
-    CatalogService.Api/
-    CatalogService.Application/
-    CatalogService.Domain/
-    CatalogService.Infrastructure/
-
-OrderService/                    order microservice solution
-  OrderService.slnx
-  Migration-Help                  notes for running migrations
-  src/
-    OrderService.Api/
-    OrderService.Application/
-    OrderService.Domain/
-    OrderService.Infrastructure/
-
-shopnet.slnx                     top-level solution aggregating services (optional)
-.gitignore
-```
 
 How it fits together:
 - Each service is split into Api, Application, Domain, and Infrastructure projects following a clean architecture style. Building-Blocks contains shared contracts and abstraction libraries used by services to keep cross-service coupling low (e.g., DTOs/events, interfaces for repositories and messaging). Services communicate by using shared contracts and can be run/managed independently.
@@ -86,12 +49,6 @@ How it fits together:
    ```
 5. Repeat for other services; each service exposes its own API surface.
 
-## Tests
-Each service may include its own test projects. Run tests from the repository root or service folder:
-```bash
-dotnet test
-```
-
 ## Configuration
 - Check each service's appsettings.json / appsettings.Development.json and the Migration-help.md files for service-specific configuration and migration instructions.
 - Shared configuration conventions (e.g., connection string keys) are typically defined by Building-Blocks contracts—inspect `Building-Blocks/ShopNet.Contracts` to see shared configuration keys and DTOs.
@@ -106,16 +63,4 @@ dotnet test
 - If you change domain models that affect the DB, include migration files and clear migration instructions in the PR.
 - Add or update tests where applicable.
 
-## TODO / Ideas
-- Add a docker-compose orchestration to run all services locally
-- Add CI workflows to build, test, and run migrations automatically
-- Provide a sample seed dataset and a Postman / HTTP collection for end-to-end testing
-- Add integration tests exercising inter-service contracts
 
-## License
-Add a LICENSE file (e.g., MIT) to make the repo's license explicit.
-
-## Try asking
-- "How do I run the CatalogService migrations end-to-end? Which connection string key does it expect and where is it configured?"
-- "What messages or DTOs are defined in Building-Blocks/ShopNet.Contracts for cross-service communication?"
-- "Where are the API endpoints defined for CartService.Api and how can I run them locally with a seeded database?"
