@@ -7,8 +7,23 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationServices();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme =
+        OpenIddict.Validation.AspNetCore
+            .OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+});
+builder.Services.AddAuthorization();
  builder.Services.AddInfraServices(builder.Configuration);
- 
+ builder.Services.AddOpenIddict()
+     .AddValidation(options =>
+     {
+         options.SetIssuer(builder.Configuration["IdentityService:Address"]!); // IdentityService
+         options.AddAudiences("api");
+  
+         // options.UseSystemNetHttp();
+         options.UseAspNetCore();
+     });
  Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .WriteTo.Console()               
@@ -39,6 +54,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapCartEndpoints();
 
 

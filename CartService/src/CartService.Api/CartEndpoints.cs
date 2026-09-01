@@ -15,7 +15,7 @@ namespace CartService.Api
             map.MapPost("/items", AddCart);
             map.MapGet("/{cartId}",GetCartItems);
             map.MapPut("/items/{cartId}",AddProductToCart);
-            map.MapPost("/checkout/{cartId}",Checkout);
+            map.MapPost("/checkout/{cartId}",Checkout).RequireAuthorization();;
             return map;
         }
 
