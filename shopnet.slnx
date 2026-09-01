@@ -1,4 +1,5 @@
 <Solution>
+  <Folder Name="/Building-Blocks/" />
   <Folder Name="/Building-Blocks/src/">
     <Project Path="Building-Blocks/src/Application.Abstractions/Application.Abstractions.csproj" />
     <Project Path="Building-Blocks/src/Domain.Abstractions/Domain.Abstractions.csproj" />
@@ -8,6 +9,7 @@
   <Folder Name="/Building-Blocks/test/">
     <Project Path="Building-Blocks/test/BuildingBlocks.UnitTests/BuildingBlocks.UnitTests.csproj" />
   </Folder>
+  <Folder Name="/CartService/" />
   <Folder Name="/CartService/src/">
     <Project Path="CartService/src/CartService.Api/CartService.Api.csproj" />
     <Project Path="CartService/src/CartService.Application/CartService.Application.csproj" />
@@ -18,6 +20,7 @@
     <Project Path="CartService/test/CartService.IntegrationTests/CartService.IntegrationTests.csproj" />
     <Project Path="CartService/test/CartService.UnitTests/CartService.UnitTests.csproj" />
   </Folder>
+  <Folder Name="/CatalogService/" />
   <Folder Name="/CatalogService/src/">
     <Project Path="CatalogService/src/CatalogService.Api/CatalogService.Api.csproj" />
     <Project Path="CatalogService/src/CatalogService.Application/CatalogService.Application.csproj" />
@@ -28,6 +31,7 @@
     <Project Path="CatalogService/test/CatalogService.IntegrationTests/CatalogService.IntegrationTests.csproj" />
     <Project Path="CatalogService/test/CatalogService.UnitTests/CatalogService.UnitTests.csproj" />
   </Folder>
+  <Folder Name="/IdentityService/" />
   <Folder Name="/IdentityService/src/">
     <Project Path="IdentityService/src/IdentityService/IdentityService.csproj" />
   </Folder>
@@ -35,6 +39,14 @@
     <Project Path="IdentityService/test/IdentityService.IntegrationTests/IdentityService.IntegrationTests.csproj" />
     <Project Path="IdentityService/test/IdentityService.UnitTests/IdentityService.UnitTests.csproj" />
   </Folder>
+  <Folder Name="/InventoryService/" />
+  <Folder Name="/InventoryService/src/">
+    <Project Path="InventoryService/src/InventoryService.Domain/InventoryService.Domain.csproj" Id="d73b80da-c0c2-4a1f-ba0c-2cdfbe9d8449" />
+  </Folder>
+  <Folder Name="/InventoryService/test/">
+    <Project Path="InventoryService/test/InventoryService.UnitTest/InventoryService.UnitTest.csproj" Id="57bfc6f4-b7f4-4b20-911e-b007002949ed" />
+  </Folder>
+  <Folder Name="/OrderService/" />
   <Folder Name="/OrderService/src/">
     <Project Path="OrderService/src/OrderService.Api/OrderService.Api.csproj" />
     <Project Path="OrderService/src/OrderService.Application/OrderService.Application.csproj" />
