@@ -1,31 +1,48 @@
 <Solution>
-  <Folder Name="/Building-Blocks/">
-    <Project Path="Building-Blocks/Application.Abstractions/Application.Abstractions.csproj" />
-    <Project Path="Building-Blocks/Domain.Abstractions/Domain.Abstractions.csproj" />
-    <Project Path="Building-Blocks/Infrastructure.Abstractions/Infrastructure.Abstractions.csproj" />
-    <Project Path="Building-Blocks/ShopNet.Contracts/ShopNet.Contracts.csproj" />
+  <Folder Name="/Building-Blocks/src/">
+    <Project Path="Building-Blocks/src/Application.Abstractions/Application.Abstractions.csproj" />
+    <Project Path="Building-Blocks/src/Domain.Abstractions/Domain.Abstractions.csproj" />
+    <Project Path="Building-Blocks/src/Infrastructure.Abstractions/Infrastructure.Abstractions.csproj" />
+    <Project Path="Building-Blocks/src/ShopNet.Contracts/ShopNet.Contracts.csproj" />
   </Folder>
-  <Folder Name="/CartService/" />
+  <Folder Name="/Building-Blocks/test/">
+    <Project Path="Building-Blocks/test/BuildingBlocks.UnitTests/BuildingBlocks.UnitTests.csproj" />
+  </Folder>
   <Folder Name="/CartService/src/">
     <Project Path="CartService/src/CartService.Api/CartService.Api.csproj" />
     <Project Path="CartService/src/CartService.Application/CartService.Application.csproj" />
     <Project Path="CartService/src/CartService.Domain/CartService.Domain.csproj" />
     <Project Path="CartService/src/CartService.Infrastructure/CartService.Infrastructure.csproj" />
   </Folder>
-  <Folder Name="/CatalogService/" />
+  <Folder Name="/CartService/test/">
+    <Project Path="CartService/test/CartService.IntegrationTests/CartService.IntegrationTests.csproj" />
+    <Project Path="CartService/test/CartService.UnitTests/CartService.UnitTests.csproj" />
+  </Folder>
   <Folder Name="/CatalogService/src/">
     <Project Path="CatalogService/src/CatalogService.Api/CatalogService.Api.csproj" />
     <Project Path="CatalogService/src/CatalogService.Application/CatalogService.Application.csproj" />
     <Project Path="CatalogService/src/CatalogService.Domain/CatalogService.Domain.csproj" />
     <Project Path="CatalogService/src/CatalogService.Infrastructure/CatalogService.Infrastructure.csproj" />
   </Folder>
-  <Folder Name="/IdentityService/">
-    <Project Path="IdentityService/IdentityService/IdentityService.csproj" />
+  <Folder Name="/CatalogService/test/">
+    <Project Path="CatalogService/test/CatalogService.IntegrationTests/CatalogService.IntegrationTests.csproj" />
+    <Project Path="CatalogService/test/CatalogService.UnitTests/CatalogService.UnitTests.csproj" />
   </Folder>
-  <Folder Name="/OrderService/">
+  <Folder Name="/IdentityService/src/">
+    <Project Path="IdentityService/src/IdentityService/IdentityService.csproj" />
+  </Folder>
+  <Folder Name="/IdentityService/test/">
+    <Project Path="IdentityService/test/IdentityService.IntegrationTests/IdentityService.IntegrationTests.csproj" />
+    <Project Path="IdentityService/test/IdentityService.UnitTests/IdentityService.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/OrderService/src/">
     <Project Path="OrderService/src/OrderService.Api/OrderService.Api.csproj" />
     <Project Path="OrderService/src/OrderService.Application/OrderService.Application.csproj" />
     <Project Path="OrderService/src/OrderService.Domain/OrderService.Domain.csproj" />
     <Project Path="OrderService/src/OrderService.Infrastructure/OrderService.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/OrderService/test/">
+    <Project Path="OrderService/test/OrderService.IntegrationTests/OrderService.IntegrationTests.csproj" />
+    <Project Path="OrderService/test/OrderService.UnitTests/OrderService.UnitTests.csproj" />
   </Folder>
 </Solution>

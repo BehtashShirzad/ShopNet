@@ -25,11 +25,11 @@ namespace CartService.Application.Commands
           var cart = CartAggregate.Create(request.UserId);
           foreach(var item in request.Products)
             {
-                var product = catalogService.GetProduct(item.ProductId);
+                var product = await catalogService.GetProduct(item.ProductId);
                 if(product is null)
                  throw new Exception("Product Not Found");
 
-                cart.AddItem(item.ProductId,item.ProductName,item.Price,item.Quantity);
+                cart.AddItem(product.Id, product.Name, product.Price, item.Quantity);
             }
 
             await repository.StoreCart(cart);

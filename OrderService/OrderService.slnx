@@ -1,12 +1,18 @@
 <Solution>
-  <Folder Name="/OrderService/">
+  <Folder Name="/src/">
     <Project Path="src/OrderService.Api/OrderService.Api.csproj" />
     <Project Path="src/OrderService.Application/OrderService.Application.csproj" />
     <Project Path="src/OrderService.Domain/OrderService.Domain.csproj" />
     <Project Path="src/OrderService.Infrastructure/OrderService.Infrastructure.csproj" />
-    <Project Path="../Building-Blocks/Application.Abstractions/Application.Abstractions.csproj" />
-    <Project Path="../Building-Blocks/Domain.Abstractions/Domain.Abstractions.csproj" />
-    <Project Path="../Building-Blocks/Infrastructure.Abstractions/Infrastructure.Abstractions.csproj" />
-    <Project Path="../Building-Blocks/ShopNet.Contracts/ShopNet.Contracts.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/OrderService.IntegrationTests/OrderService.IntegrationTests.csproj" />
+    <Project Path="test/OrderService.UnitTests/OrderService.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/Building-Blocks/">
+    <Project Path="../Building-Blocks/src/Application.Abstractions/Application.Abstractions.csproj" />
+    <Project Path="../Building-Blocks/src/Domain.Abstractions/Domain.Abstractions.csproj" />
+    <Project Path="../Building-Blocks/src/Infrastructure.Abstractions/Infrastructure.Abstractions.csproj" />
+    <Project Path="../Building-Blocks/src/ShopNet.Contracts/ShopNet.Contracts.csproj" />
   </Folder>
 </Solution>

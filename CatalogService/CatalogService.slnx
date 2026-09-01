@@ -1,13 +1,18 @@
 <Solution>
-  <Folder Name="/CatalogService/">
+  <Folder Name="/src/">
     <Project Path="src/CatalogService.Api/CatalogService.Api.csproj" />
-    <Project Path="src/CatalogService.Domain/CatalogService.Domain.csproj" />
     <Project Path="src/CatalogService.Application/CatalogService.Application.csproj" />
+    <Project Path="src/CatalogService.Domain/CatalogService.Domain.csproj" />
     <Project Path="src/CatalogService.Infrastructure/CatalogService.Infrastructure.csproj" />
-    <Project Path="../Building-Blocks/Application.Abstractions/Application.Abstractions.csproj" />
-    <Project Path="../Building-Blocks/Domain.Abstractions/Domain.Abstractions.csproj" />
-    <Project Path="../Building-Blocks/Infrastructure.Abstractions/Infrastructure.Abstractions.csproj" />
-    <Project Path="../Building-Blocks/ShopNet.Contracts/ShopNet.Contracts.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/CatalogService.IntegrationTests/CatalogService.IntegrationTests.csproj" />
+    <Project Path="test/CatalogService.UnitTests/CatalogService.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/Building-Blocks/">
+    <Project Path="../Building-Blocks/src/Application.Abstractions/Application.Abstractions.csproj" />
+    <Project Path="../Building-Blocks/src/Domain.Abstractions/Domain.Abstractions.csproj" />
+    <Project Path="../Building-Blocks/src/Infrastructure.Abstractions/Infrastructure.Abstractions.csproj" />
+    <Project Path="../Building-Blocks/src/ShopNet.Contracts/ShopNet.Contracts.csproj" />
   </Folder>
 </Solution>
- 

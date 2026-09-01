@@ -22,7 +22,10 @@ namespace CartService.Infrastructure
             services.AddScoped<IRepository, CartServiceRepository>();
             services.AddSingleton<IConnectionMultiplexer>(sp =>
             {
-                var configuration = ConfigurationOptions.Parse(cfg["Redis:ConnectionString"]??"localhost:6379", true);
+                var connectionString = cfg["Redis:ConnectionString"]
+                    ?? cfg["Redis:Configuration"]
+                    ?? "localhost:6379";
+                var configuration = ConfigurationOptions.Parse(connectionString, true);
                 return ConnectionMultiplexer.Connect(configuration);
             });
 

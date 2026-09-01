@@ -46,7 +46,7 @@ namespace CartService.Application.Commands
                                 )).ToList(),
                             cart.TotalPrice
                         );
-            await integrationEventBus.PublishAsync(integrationEvent);
+            await integrationEventBus.PublishAsync(integrationEvent, cancellationToken);
             return cart.Id;
         }
     }

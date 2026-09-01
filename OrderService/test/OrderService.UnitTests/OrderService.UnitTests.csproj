@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/OrderService.Api/OrderService.Api.csproj" />
+    <ProjectReference Include="../../src/OrderService.Application/OrderService.Application.csproj" />
+    <ProjectReference Include="../../src/OrderService.Domain/OrderService.Domain.csproj" />
+    <ProjectReference Include="../../src/OrderService.Infrastructure/OrderService.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

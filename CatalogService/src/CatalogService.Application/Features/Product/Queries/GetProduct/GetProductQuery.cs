@@ -18,7 +18,9 @@ namespace CatalogService.Application.Features.Product.Queries.GetProduct
         {
             var product = await productReadRepository.GetProductAsync(p => p.Id == request.Id,cancellationToken);//TODO: NEED Projection
            
-            return new GetProductDto(product.Id, product.Name, product.Price, product.Stock);
+            return product is null
+                ? null
+                : new GetProductDto(product.Id, product.Name, product.Price, product.Stock);
         }
     }
      

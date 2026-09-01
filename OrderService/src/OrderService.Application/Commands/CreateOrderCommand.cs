@@ -30,9 +30,13 @@ namespace OrderService.Application.Commands
             {
                 order.AddItem(item.ProductId, item.ProductName,item.Price, item.Quantity);
             }
-             
-            
-                await   _repository.AddAsync(order);
+
+            order.RaiseEvent(new Domain.DomanEvents.OrderCreatedDomainEvent(
+                order.Id,
+                order.Items.ToList(),
+                order.CustomerId));
+
+            await _repository.AddAsync(order);
         
         }
     }

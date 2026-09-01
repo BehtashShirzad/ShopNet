@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/CartService.Api/CartService.Api.csproj" />
+    <ProjectReference Include="../../src/CartService.Application/CartService.Application.csproj" />
+    <ProjectReference Include="../../src/CartService.Domain/CartService.Domain.csproj" />
+    <ProjectReference Include="../../src/CartService.Infrastructure/CartService.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

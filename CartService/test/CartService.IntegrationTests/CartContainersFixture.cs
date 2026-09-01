@@ -1,0 +1,29 @@
+using Testcontainers.RabbitMq;
+using Testcontainers.Redis;
+
+namespace CartService.IntegrationTests;
+
+public sealed class CartContainersFixture : IAsyncLifetime
+{
+    private readonly RedisContainer _redis = new RedisBuilder("redis:7.0-alpine").Build();
+    private readonly RabbitMqContainer _rabbitMq = new RabbitMqBuilder("rabbitmq:3.13-alpine").Build();
+
+    public string RedisConnectionString => _redis.GetConnectionString();
+    public string RabbitMqConnectionString => _rabbitMq.GetConnectionString();
+
+    public Task InitializeAsync() => Task.WhenAll(
+        _redis.StartAsync(),
+        _rabbitMq.StartAsync());
+
+    public async Task DisposeAsync()
+    {
+        await _rabbitMq.DisposeAsync();
+        await _redis.DisposeAsync();
+    }
+}
+
+[CollectionDefinition(Name)]
+public sealed class CartContainersCollection : ICollectionFixture<CartContainersFixture>
+{
+    public const string Name = "Cart containers";
+}

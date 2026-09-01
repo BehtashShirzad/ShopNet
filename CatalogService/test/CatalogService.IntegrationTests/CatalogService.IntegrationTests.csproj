@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="10.0.0" />
+    <PackageReference Include="Testcontainers.MsSql" Version="4.14.0" />
+    <PackageReference Include="Testcontainers.RabbitMq" Version="4.14.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/CatalogService.Api/CatalogService.Api.csproj" />
+    <ProjectReference Include="../../src/CatalogService.Application/CatalogService.Application.csproj" />
+    <ProjectReference Include="../../src/CatalogService.Domain/CatalogService.Domain.csproj" />
+    <ProjectReference Include="../../src/CatalogService.Infrastructure/CatalogService.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

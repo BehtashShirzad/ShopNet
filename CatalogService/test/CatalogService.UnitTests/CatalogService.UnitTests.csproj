@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/CatalogService.Api/CatalogService.Api.csproj" />
+    <ProjectReference Include="../../src/CatalogService.Application/CatalogService.Application.csproj" />
+    <ProjectReference Include="../../src/CatalogService.Domain/CatalogService.Domain.csproj" />
+    <ProjectReference Include="../../src/CatalogService.Infrastructure/CatalogService.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

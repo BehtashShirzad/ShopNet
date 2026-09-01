@@ -33,8 +33,8 @@ public class AuthService : IAuthService
         {
             UserName  = email,
             Email     = email,
-            FirstName = firstName,
-            LastName  = lastName
+            FirstName = firstName ?? string.Empty,
+            LastName  = lastName ?? string.Empty
         };
  
         var result = await _userManager.CreateAsync(user, password);

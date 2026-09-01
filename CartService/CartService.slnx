@@ -1,12 +1,18 @@
 <Solution>
-  <Folder Name="/CartService/">
-     <Project Path="src/CartService.Api/CartService.Api.csproj" />
-     <Project Path="src/CartService.Domain/CartService.Domain.csproj" />
-     <Project Path="src/CartService.Application/CartService.Application.csproj" />
-     <Project Path="src/CartService.Infrastructure/CartService.Infrastructure.csproj" />
-      <Project Path="../Building-Blocks/Application.Abstractions/Application.Abstractions.csproj" />
-    <Project Path="../Building-Blocks/Domain.Abstractions/Domain.Abstractions.csproj" />
-    <Project Path="../Building-Blocks/Infrastructure.Abstractions/Infrastructure.Abstractions.csproj" />
-    <Project Path="../Building-Blocks/ShopNet.Contracts/ShopNet.Contracts.csproj" />
+  <Folder Name="/src/">
+    <Project Path="src/CartService.Api/CartService.Api.csproj" />
+    <Project Path="src/CartService.Application/CartService.Application.csproj" />
+    <Project Path="src/CartService.Domain/CartService.Domain.csproj" />
+    <Project Path="src/CartService.Infrastructure/CartService.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/CartService.IntegrationTests/CartService.IntegrationTests.csproj" />
+    <Project Path="test/CartService.UnitTests/CartService.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/Building-Blocks/">
+    <Project Path="../Building-Blocks/src/Application.Abstractions/Application.Abstractions.csproj" />
+    <Project Path="../Building-Blocks/src/Domain.Abstractions/Domain.Abstractions.csproj" />
+    <Project Path="../Building-Blocks/src/Infrastructure.Abstractions/Infrastructure.Abstractions.csproj" />
+    <Project Path="../Building-Blocks/src/ShopNet.Contracts/ShopNet.Contracts.csproj" />
   </Folder>
 </Solution>

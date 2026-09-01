@@ -27,7 +27,9 @@ namespace OrderService.Domain.Aggregates
 
         public static OrderAggregate Create(Guid customerId, Guid cartId)
         {
-            
+            Guard.Against.Default(customerId, nameof(customerId));
+            Guard.Against.Default(cartId, nameof(cartId));
+
             var order =  new OrderAggregate()
             {
              Id=IdGenerator.New(),
@@ -35,7 +37,6 @@ namespace OrderService.Domain.Aggregates
              CustomerId = customerId,
              CartId = cartId
             };
-            order.RaiseEvent(new OrderCreatedDomainEvent(order.Id,order.Items.ToList(),order.CustomerId));
             return order;
         }
 

@@ -8,9 +8,9 @@
     <ItemGroup>
       <ProjectReference Include="..\CatalogService.Domain\CatalogService.Domain.csproj" />
         <ProjectReference Include="..\CatalogService.Application\CatalogService.Application.csproj" />
-         <ProjectReference Include="..\..\..\Building-Blocks\Application.Abstractions\Application.Abstractions.csproj" />
-         <ProjectReference Include="..\..\..\Building-Blocks\Infrastructure.Abstractions\Infrastructure.Abstractions.csproj" />
-         <ProjectReference Include="..\..\..\Building-Blocks\ShopNet.Contracts\ShopNet.Contracts.csproj" />
+         <ProjectReference Include="..\..\..\Building-Blocks\src\Application.Abstractions\Application.Abstractions.csproj" />
+         <ProjectReference Include="..\..\..\Building-Blocks\src\Infrastructure.Abstractions\Infrastructure.Abstractions.csproj" />
+         <ProjectReference Include="..\..\..\Building-Blocks\src\ShopNet.Contracts\ShopNet.Contracts.csproj" />
     </ItemGroup>
 <ItemGroup>
     

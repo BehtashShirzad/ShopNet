@@ -29,12 +29,12 @@ namespace CartService.Application.Commands
         throw new Exception("Cart not found");
           if(cart.CustomerId!= request.UserId)
                 throw new Exception("Cart not found");
-         var product = catalogService.GetProduct(request.ProductDto.ProductId);
+         var product = await catalogService.GetProduct(request.ProductDto.ProductId);
                 if(product is null)
                  throw new Exception("Product Not Found");
-            cart.AddItem(request.ProductDto.ProductId,
-            request.ProductDto.ProductName,
-            request.ProductDto.Price,
+            cart.AddItem(product.Id,
+            product.Name,
+            product.Price,
             request.ProductDto.Quantity);
 
 

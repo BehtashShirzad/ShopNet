@@ -9,7 +9,7 @@ ShopNet is a C# microservices sample implementing a modular e‑commerce platfor
   - Entity Framework Core for persistence and migrations
   - A logging framework (e.g., Serilog) for structured logging
   - API toolkits for building Web APIs and exposing OpenAPI/Swagger
-  - Internal contracts and abstractions shared via Building-Blocks/ShopNet.Contracts
+  - Internal contracts and abstractions shared via `Building-Blocks/src/ShopNet.Contracts`
 
 
 How it fits together:
@@ -24,6 +24,7 @@ How it fits together:
 ## Prerequisites
 - .NET SDK (match the TargetFramework in each service's csproj)
 - A database supported by the chosen EF Core provider (SQL Server, PostgreSQL, etc.)
+- Docker Desktop (required for integration tests)
 - (Optional) dotnet-ef global tool for applying migrations:
   ```
   dotnet tool install --global dotnet-ef
@@ -51,12 +52,29 @@ How it fits together:
 
 ## Configuration
 - Check each service's appsettings.json / appsettings.Development.json and the Migration-help.md files for service-specific configuration and migration instructions.
-- Shared configuration conventions (e.g., connection string keys) are typically defined by Building-Blocks contracts—inspect `Building-Blocks/ShopNet.Contracts` to see shared configuration keys and DTOs.
+- Shared configuration conventions (e.g., connection string keys) are typically defined by Building-Blocks contracts—inspect `Building-Blocks/src/ShopNet.Contracts` to see shared configuration keys and DTOs.
 
 ## Development notes
 - Work inside one service at a time: modify Domain → Application → Infrastructure, update migrations, then update Api and tests.
-- Keep shared contracts stable: changes in Building-Blocks/ShopNet.Contracts can affect multiple services.
+- Keep shared contracts stable: changes in `Building-Blocks/src/ShopNet.Contracts` can affect multiple services.
 - Migration helper files in CatalogService and OrderService contain notes to run or scaffold EF Core migrations for those services.
+
+## Tests
+
+Each component keeps production projects under `src` and test projects in the adjacent `test` directory. Unit tests cover domain rules, application handlers, API/controller behavior, and infrastructure adapters. Integration tests use Testcontainers to start disposable Docker dependencies:
+
+- Cart: Redis and RabbitMQ
+- Catalog: SQL Server and RabbitMQ
+- Order: SQL Server and RabbitMQ
+- Identity: SQL Server
+
+Run every test from the repository root:
+
+```bash
+dotnet test shopnet.slnx
+```
+
+Docker Desktop must be running. Testcontainers selects random host ports and removes its containers after the run, so the suites do not require fixed local ports or shared development databases.
 
 ## Contributing
 - Fork and open a branch per change (one concern per PR).
