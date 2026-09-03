@@ -5,7 +5,6 @@ using IdentityService.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
-using Microsoft.OpenApi.Models;
 using OpenIddict.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
