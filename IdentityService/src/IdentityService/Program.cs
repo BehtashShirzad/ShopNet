@@ -2,6 +2,7 @@
 using IdentityService.Models;
 using IdentityService.Persistence;
 using IdentityService.Services;
+using IdentityService.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
@@ -65,6 +66,13 @@ builder.Services.AddOpenIddict()
         {
             options.AddDevelopmentEncryptionCertificate()
                    .AddDevelopmentSigningCertificate();
+        }
+        else
+        {
+            var certificate = OpenIddictCertificateLoader.Load(builder.Configuration);
+
+            options.AddEncryptionCertificate(certificate)
+                   .AddSigningCertificate(certificate);
         }
 
         var aspNetCore =   options.UseAspNetCore()

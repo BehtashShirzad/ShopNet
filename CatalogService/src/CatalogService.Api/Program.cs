@@ -23,11 +23,11 @@ builder.Host.UseSerilog();
 builder.Services.AddHttpContextAccessor();
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.ListenLocalhost(60002, o =>
+    options.ListenAnyIP(builder.Configuration.GetValue("ServicePorts:Grpc", 60002), o =>
     {
         o.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
     });
-    options.ListenLocalhost(6002, o =>
+    options.ListenAnyIP(builder.Configuration.GetValue("ServicePorts:Http", 6002), o =>
     {
         o.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1;
     });
@@ -45,11 +45,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (app.Configuration.GetValue("HttpsRedirection:Enabled", true))
+    app.UseHttpsRedirection();
 
 app.MapProductEndpoints();
 app.MapCategoryEndpoints();
-app.MapGrpcService<CatalogServiceGrpcService>(); 
+app.MapGrpcService<CatalogServiceGrpcService>();
 app.Run();
-
- 

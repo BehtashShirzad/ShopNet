@@ -21,11 +21,11 @@ builder.Host.UseSerilog();
 builder.Services.AddHttpContextAccessor();
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.ListenLocalhost(60001, o =>
+    options.ListenAnyIP(builder.Configuration.GetValue("ServicePorts:Grpc", 60001), o =>
     {
         o.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
     });
-    options.ListenLocalhost(6001, o =>
+    options.ListenAnyIP(builder.Configuration.GetValue("ServicePorts:Http", 6001), o =>
     {
         o.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1;
     });
@@ -40,10 +40,8 @@ if (app.Environment.IsDevelopment())
 app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (app.Configuration.GetValue("HttpsRedirection:Enabled", true))
+    app.UseHttpsRedirection();
 
- 
 
 app.Run();
-
- 
