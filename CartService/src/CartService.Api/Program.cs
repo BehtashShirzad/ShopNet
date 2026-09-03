@@ -20,8 +20,8 @@ builder.Services.AddAuthorization();
      {
          options.SetIssuer(builder.Configuration["IdentityService:Address"]!); // IdentityService
          options.AddAudiences("api");
-  
-         // options.UseSystemNetHttp();
+
+         options.UseSystemNetHttp();
          options.UseAspNetCore();
      });
  Log.Logger = new LoggerConfiguration()

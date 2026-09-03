@@ -2,6 +2,7 @@
 using OrderService.Api;
 using OrderService.Application;
 using OrderService.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,6 +32,13 @@ builder.WebHost.ConfigureKestrel(options =>
     });
 });
 var app = builder.Build();
+
+if (app.Configuration.GetValue("Database:MigrateOnStartup", false))
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    await scope.ServiceProvider.GetRequiredService<WriteDbContext>().Database.MigrateAsync();
+}
+
 app.MapEndpoint();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

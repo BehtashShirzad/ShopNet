@@ -5,6 +5,7 @@ using CatalogService.Infrastructure;
 using Serilog;
 using Application.Abstractions.Contracts;
 using CatalogService.Api.Grpc;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,12 @@ builder.WebHost.ConfigureKestrel(options =>
 
 
 var app = builder.Build();
+
+if (app.Configuration.GetValue("Database:MigrateOnStartup", false))
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    await scope.ServiceProvider.GetRequiredService<WriteDbContext>().Database.MigrateAsync();
+}
  
 
 // Configure the HTTP request pipeline.

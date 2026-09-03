@@ -1,0 +1,191 @@
+name: shopnet
+
+x-service-defaults: &service-defaults
+  restart: unless-stopped
+  networks:
+    - shopnet
+
+x-rabbitmq-environment: &rabbitmq-environment
+  RabbitMq__Host: rabbitmq
+  RabbitMq__Port: "5672"
+  RabbitMq__VirtualHost: "/"
+  RabbitMq__Username: "${SHOPNET_RABBITMQ_USERNAME:-shopnet}"
+  RabbitMq__Password: "${SHOPNET_RABBITMQ_PASSWORD:-ShopNet!Rabbit2026}"
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: "${SHOPNET_SQL_PASSWORD:-ShopNet!Sql2026}"
+    ports:
+      - "${SHOPNET_SQL_PORT:-1433}:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$${MSSQL_SA_PASSWORD}" -C -Q "SELECT 1" -b -o /dev/null || /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$${MSSQL_SA_PASSWORD}" -Q "SELECT 1" -b -o /dev/null
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    networks:
+      - shopnet
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: "${SHOPNET_RABBITMQ_USERNAME:-shopnet}"
+      RABBITMQ_DEFAULT_PASS: "${SHOPNET_RABBITMQ_PASSWORD:-ShopNet!Rabbit2026}"
+    ports:
+      - "${SHOPNET_RABBITMQ_PORT:-5672}:5672"
+      - "${SHOPNET_RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    networks:
+      - shopnet
+
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "${SHOPNET_REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    networks:
+      - shopnet
+
+  identity:
+    <<: *service-defaults
+    image: shopnet/identity-service:${TAG:-local}
+    build:
+      context: .
+      dockerfile: IdentityService/src/IdentityService/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+      Database__MigrateOnStartup: "true"
+      ConnectionStrings__IdentityServiceConnection: "Server=sqlserver,1433;Database=IdentityService;User Id=sa;Password=${SHOPNET_SQL_PASSWORD:-ShopNet!Sql2026};Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True"
+    ports:
+      - "${SHOPNET_IDENTITY_PORT:-5239}:8080"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  catalog:
+    <<: *service-defaults
+    image: shopnet/catalog-service:${TAG:-local}
+    build:
+      context: .
+      dockerfile: CatalogService/src/CatalogService.Api/Dockerfile
+    environment:
+      <<: *rabbitmq-environment
+      Database__MigrateOnStartup: "true"
+      ConnectionStrings__CatalogServiceConnection: "Server=sqlserver,1433;Database=CatalogService;User Id=sa;Password=${SHOPNET_SQL_PASSWORD:-ShopNet!Sql2026};Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True"
+      CatalogOutbox__DeliveryEnabled: "true"
+    ports:
+      - "${SHOPNET_CATALOG_HTTP_PORT:-6002}:8080"
+      - "${SHOPNET_CATALOG_GRPC_PORT:-60002}:8081"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  inventory:
+    <<: *service-defaults
+    image: shopnet/inventory-service:${TAG:-local}
+    build:
+      context: .
+      dockerfile: InventoryService/src/InventoryService.Api/Dockerfile
+    environment:
+      <<: *rabbitmq-environment
+      Database__MigrateOnStartup: "true"
+      ConnectionStrings__InventoryServiceConnection: "Server=sqlserver,1433;Database=InventoryService;User Id=sa;Password=${SHOPNET_SQL_PASSWORD:-ShopNet!Sql2026};Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True"
+      InventoryOutbox__DeliveryEnabled: "true"
+      Inventory__ExpiryEnabled: "true"
+    ports:
+      - "${SHOPNET_INVENTORY_GRPC_PORT:-5084}:8080"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  order:
+    <<: *service-defaults
+    image: shopnet/order-service:${TAG:-local}
+    build:
+      context: .
+      dockerfile: OrderService/src/OrderService.Api/Dockerfile
+    environment:
+      <<: *rabbitmq-environment
+      Database__MigrateOnStartup: "true"
+      ConnectionStrings__OrderServiceConnection: "Server=sqlserver,1433;Database=OrderService;User Id=sa;Password=${SHOPNET_SQL_PASSWORD:-ShopNet!Sql2026};Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True"
+      OrderOutbox__DeliveryEnabled: "true"
+      Inventory__ReservationMinutes: "15"
+      Inventory__CommandQueue: inventory-commands-v1
+    ports:
+      - "${SHOPNET_ORDER_HTTP_PORT:-6001}:8080"
+      - "${SHOPNET_ORDER_GRPC_PORT:-60001}:8081"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      inventory:
+        condition: service_started
+
+  cart:
+    <<: *service-defaults
+    image: shopnet/cart-service:${TAG:-local}
+    build:
+      context: .
+      dockerfile: CartService/src/CartService.Api/Dockerfile
+    environment:
+      <<: *rabbitmq-environment
+      Redis__ConnectionString: redis:6379,abortConnect=false
+      Redis__KeyPrefix: "shopnet:"
+      Grpc__CatalogService: http://catalog:8081
+      Grpc__InventoryService: http://inventory:8080
+      Grpc__TimeoutSeconds: "5"
+      IdentityService__Address: http://identity:8080
+      CartOutbox__DeliveryEnabled: "true"
+    ports:
+      - "${SHOPNET_CART_HTTP_PORT:-6003}:8080"
+    depends_on:
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      identity:
+        condition: service_started
+      catalog:
+        condition: service_started
+      inventory:
+        condition: service_started
+
+networks:
+  shopnet:
+    driver: bridge
+
+volumes:
+  sqlserver-data:
+  rabbitmq-data:
+  redis-data:
