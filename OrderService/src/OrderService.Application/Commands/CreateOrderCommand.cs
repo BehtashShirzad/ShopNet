@@ -2,7 +2,7 @@ using Application.Abstractions.Contracts;
 using OrderService.Application.Inventory;
 using OrderService.Domain;
 using OrderService.Domain.Aggregates;
-using OrderService.Domain.DomanEvents;
+using OrderService.Domain.DomainEvents;
 using ShopNet.Contracts.Inventory.V1;
 using ShopNet.Contracts.SharedDtos;
 

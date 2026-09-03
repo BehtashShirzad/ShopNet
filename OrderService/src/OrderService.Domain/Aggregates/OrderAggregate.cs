@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Ardalis.GuardClauses;
 using Domain.Abstractions;
-using OrderService.Domain.DomanEvents;
+using OrderService.Domain.DomainEvents;
 using OrderService.Domain.Enums;
 using OrderService.Domain.ValueObjects;
 
