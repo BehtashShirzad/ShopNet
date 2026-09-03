@@ -31,6 +31,8 @@ public sealed class StockReservation : Entity<Guid>
 
     public Guid OrderId { get; private set; }
 
+    public Guid ReservationRequestId { get; private set; }
+
     public int Quantity { get; private set; }
 
     public StockReservationStatus Status { get; private set; }
@@ -56,7 +58,17 @@ public sealed class StockReservation : Entity<Guid>
         int quantity,
         DateTime reservedAtUtc,
         DateTime expiresAtUtc)
+        => Create(orderId, orderId, quantity, reservedAtUtc, expiresAtUtc);
+
+    internal static StockReservation Create(
+        Guid orderId,
+        Guid reservationRequestId,
+        int quantity,
+        DateTime reservedAtUtc,
+        DateTime expiresAtUtc)
     {
+        if (reservationRequestId == Guid.Empty)
+            throw new InvalidStockReservationException("ReservationRequestId cannot be empty.");
         if (orderId == Guid.Empty)
         {
             throw new InvalidStockReservationException(
@@ -78,12 +90,14 @@ public sealed class StockReservation : Entity<Guid>
                 "Reservation expiration must be after reservation time.");
         }
 
-        return new StockReservation(
+        var reservation = new StockReservation(
             IdGenerator.New(),
             orderId,
             quantity,
             reservedAtUtc,
             expiresAtUtc);
+        reservation.ReservationRequestId = reservationRequestId;
+        return reservation;
     }
 
     /// <summary>
@@ -101,6 +115,9 @@ public sealed class StockReservation : Entity<Guid>
         }
 
         EnsureReserved(nameof(Commit));
+
+        if (committedAtUtc < ReservedAtUtc)
+            throw new InvalidStockReservationException("Commit time cannot be before reservation time.");
 
         if (committedAtUtc >= ExpiresAtUtc)
         {
@@ -128,7 +145,7 @@ public sealed class StockReservation : Entity<Guid>
     {
         EnsureUtc(releasedAtUtc, nameof(releasedAtUtc));
 
-        if (reason == ReservationReleaseReason.None ||
+        if (!Enum.IsDefined(reason) || reason == ReservationReleaseReason.None ||
             reason == ReservationReleaseReason.Expired)
         {
             throw new InvalidStockReservationException(

@@ -41,9 +41,13 @@
   </Folder>
   <Folder Name="/InventoryService/" />
   <Folder Name="/InventoryService/src/">
+    <Project Path="InventoryService/src/InventoryService.Application/InventoryService.Application.csproj" />
+    <Project Path="InventoryService/src/InventoryService.Infrastructure/InventoryService.Infrastructure.csproj" />
+    <Project Path="InventoryService/src/InventoryService.Api/InventoryService.Api.csproj" />
     <Project Path="InventoryService/src/InventoryService.Domain/InventoryService.Domain.csproj" Id="d73b80da-c0c2-4a1f-ba0c-2cdfbe9d8449" />
   </Folder>
   <Folder Name="/InventoryService/test/">
+    <Project Path="InventoryService/test/InventoryService.IntegrationTests/InventoryService.IntegrationTests.csproj" />
     <Project Path="InventoryService/test/InventoryService.UnitTest/InventoryService.UnitTest.csproj" Id="57bfc6f4-b7f4-4b20-911e-b007002949ed" />
   </Folder>
   <Folder Name="/OrderService/" />

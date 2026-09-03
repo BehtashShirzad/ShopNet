@@ -8,5 +8,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/InventoryService.Domain/InventoryService.Domain.csproj" />
+    <ProjectReference Include="../../src/InventoryService.Application/InventoryService.Application.csproj" />
   </ItemGroup>
 </Project>

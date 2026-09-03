@@ -121,7 +121,7 @@ public sealed class InventoryItem : AggregateRoot<Guid>
                 "Stock adjustment cannot be zero.");
         }
 
-        if (reason == StockAdjustmentReason.None)
+        if (!Enum.IsDefined(reason) || reason == StockAdjustmentReason.None)
         {
             throw new DomainException(
                 "Stock adjustment reason is required.");
@@ -178,10 +178,21 @@ public sealed class InventoryItem : AggregateRoot<Guid>
         int quantity,
         DateTime reservedAtUtc,
         DateTime expiresAtUtc)
+        => Reserve(orderId, orderId, quantity, reservedAtUtc, expiresAtUtc);
+
+    public StockReservation Reserve(
+        Guid orderId,
+        Guid reservationRequestId,
+        int quantity,
+        DateTime reservedAtUtc,
+        DateTime expiresAtUtc)
     {
         EnsureActive();
         EnsureUtc(reservedAtUtc, nameof(reservedAtUtc));
         EnsureUtc(expiresAtUtc, nameof(expiresAtUtc));
+
+        if (reservationRequestId == Guid.Empty)
+            throw new DomainException("ReservationRequestId cannot be empty.");
 
         if (orderId == Guid.Empty)
         {
@@ -196,7 +207,7 @@ public sealed class InventoryItem : AggregateRoot<Guid>
         }
 
         var existingReservation = _reservations
-            .SingleOrDefault(x => x.OrderId == orderId);
+            .SingleOrDefault(x => x.ReservationRequestId == reservationRequestId);
 
         if (existingReservation is not null)
         {
@@ -211,6 +222,10 @@ public sealed class InventoryItem : AggregateRoot<Guid>
             return existingReservation;
         }
 
+        if (_reservations.Any(x => x.OrderId == orderId &&
+            x.Status is StockReservationStatus.Reserved or StockReservationStatus.Committed))
+            throw new DomainException("The order already has an active or committed reservation.");
+
         if (AvailableQuantity < quantity)
         {
             throw new DomainException(
@@ -222,6 +237,7 @@ public sealed class InventoryItem : AggregateRoot<Guid>
 
         var reservation = StockReservation.Create(
             orderId,
+            reservationRequestId,
             quantity,
             reservedAtUtc,
             expiresAtUtc);
@@ -247,10 +263,13 @@ public sealed class InventoryItem : AggregateRoot<Guid>
     public void CommitReservation(
         Guid orderId,
         DateTime committedAtUtc)
+        => CommitReservation(orderId, orderId, committedAtUtc);
+
+    public void CommitReservation(Guid orderId, Guid reservationRequestId, DateTime committedAtUtc)
     {
         EnsureUtc(committedAtUtc, nameof(committedAtUtc));
 
-        var reservation = FindReservation(orderId);
+        var reservation = FindReservation(orderId, reservationRequestId);
 
         if (!reservation.Commit(committedAtUtc))
         {
@@ -276,10 +295,14 @@ public sealed class InventoryItem : AggregateRoot<Guid>
         Guid orderId,
         ReservationReleaseReason reason,
         DateTime releasedAtUtc)
+        => ReleaseReservation(orderId, orderId, reason, releasedAtUtc);
+
+    public void ReleaseReservation(Guid orderId, Guid reservationRequestId,
+        ReservationReleaseReason reason, DateTime releasedAtUtc)
     {
         EnsureUtc(releasedAtUtc, nameof(releasedAtUtc));
 
-        var reservation = FindReservation(orderId);
+        var reservation = FindReservation(orderId, reservationRequestId);
 
         if (!reservation.Release(reason, releasedAtUtc))
         {
@@ -302,10 +325,13 @@ public sealed class InventoryItem : AggregateRoot<Guid>
     public void ExpireReservation(
         Guid orderId,
         DateTime expiredAtUtc)
+        => ExpireReservation(orderId, orderId, expiredAtUtc);
+
+    public void ExpireReservation(Guid orderId, Guid reservationRequestId, DateTime expiredAtUtc)
     {
         EnsureUtc(expiredAtUtc, nameof(expiredAtUtc));
 
-        var reservation = FindReservation(orderId);
+        var reservation = FindReservation(orderId, reservationRequestId);
 
         if (!reservation.Expire(expiredAtUtc))
         {
@@ -381,7 +407,7 @@ public sealed class InventoryItem : AggregateRoot<Guid>
             ProductId));
     }
 
-    private StockReservation FindReservation(Guid orderId)
+    private StockReservation FindReservation(Guid orderId, Guid reservationRequestId)
     {
         if (orderId == Guid.Empty)
         {
@@ -389,7 +415,8 @@ public sealed class InventoryItem : AggregateRoot<Guid>
                 "OrderId cannot be empty.");
         }
 
-        return _reservations.SingleOrDefault(x => x.OrderId == orderId)
+        return _reservations.SingleOrDefault(x => x.OrderId == orderId &&
+            x.ReservationRequestId == reservationRequestId)
             ?? throw new DomainException(
                 $"Reservation for order '{orderId}' was not found.");
     }

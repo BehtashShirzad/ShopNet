@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../InventoryService.Domain/InventoryService.Domain.csproj" />
+    <ProjectReference Include="../../../Building-Blocks/src/ShopNet.Contracts/ShopNet.Contracts.csproj" />
+  </ItemGroup>
+</Project>
