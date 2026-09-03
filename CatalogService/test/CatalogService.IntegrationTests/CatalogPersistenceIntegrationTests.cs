@@ -21,11 +21,15 @@ public class CatalogPersistenceIntegrationTests(CatalogContainersFixture fixture
         await using var writeContext = new WriteDbContext(
             writeOptions, domainEventBus, new TestCurrentUser(userId));
         await writeContext.Database.MigrateAsync();
+        var priceProperty = writeContext.Model.FindEntityType(typeof(ProductAggregate))!
+            .FindProperty(nameof(ProductAggregate.Price))!;
+        Assert.Equal(18, priceProperty.GetPrecision());
+        Assert.Equal(2, priceProperty.GetScale());
         var category = CategoryEntity.Create("Computers");
         await new CategoryWriteRepository(writeContext).AddCategory(category);
         await writeContext.SaveChangesAsync();
         var product = ProductAggregate.Create(
-            category.Id, "Laptop", "Description", 1200m, 5);
+            category.Id, "Laptop", "Description", 1200m);
         new ProductWriteRepository(writeContext).AddProduct(product);
 
         await writeContext.SaveChangesAsync();

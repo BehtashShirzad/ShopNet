@@ -17,6 +17,8 @@ namespace CatalogService.Infrastructure
         override protected void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Domain.Aggregates.ProductAggregate>()
+                .Property(product => product.Price).HasPrecision(18, 2);
           
         }
 

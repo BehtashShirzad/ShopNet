@@ -101,7 +101,7 @@ public class CatalogApplicationTests
     public async Task UpdateProduct_UpdatesExistingProduct()
     {
         var product = ProductAggregate.Create(
-            Guid.NewGuid(), "Old", "Description", 10m, 1);
+            Guid.NewGuid(), "Old", "Description", 10m);
         var read = new Mock<IProductReadRepository>();
         read.Setup(x => x.GetProductAsync(
                 It.IsAny<Expression<Func<ProductAggregate, bool>>>(),
@@ -153,7 +153,7 @@ public class CatalogApplicationTests
     public async Task GetProducts_MapsRepositoryResults()
     {
         var product = ProductAggregate.Create(
-            Guid.NewGuid(), "Product", "Description", 10m, 2);
+            Guid.NewGuid(), "Product", "Description", 10m);
         var read = new Mock<IProductReadRepository>();
         read.Setup(x => x.GetProductsAsync()).ReturnsAsync([product]);
 
@@ -175,11 +175,11 @@ public class CatalogApplicationTests
         Assert.False(new UpdateCategoryCommandValidator()
             .Validate(new UpdateCategoryCommand(Guid.Empty, "")).IsValid);
         Assert.False(new CreateProductCommandValidator()
-            .Validate(new CreateProductCommand(Guid.Empty, "", "", 0m, 0)).IsValid);
+            .Validate(new CreateProductCommand(Guid.Empty, "", "", 0m)).IsValid);
         Assert.False(new UpdateProductValidator()
             .Validate(new UpdateProductCommand(Guid.Empty, null, null, null, null)).IsValid);
     }
 
     private static CreateProductCommand NewProductCommand() => new(
-        Guid.NewGuid(), "Laptop", "Description", 1200m, 4);
+        Guid.NewGuid(), "Laptop", "Description", 1200m);
 }

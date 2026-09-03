@@ -7,7 +7,7 @@ using Mapster;
 namespace CatalogService.Application.Features.Product.Commands.CreateProduct
 {
 
-    public record CreateProductCommand(Guid  CategoryId,string Name, string Description,decimal Price,int Stock)
+    public record CreateProductCommand(Guid CategoryId, string Name, string Description, decimal Price)
     :ICommand<CreateProductCommandResponse>;
     public record CreateProductCommandResponse(Guid Id,string Name,string Description,decimal Price);
 
@@ -23,7 +23,7 @@ namespace CatalogService.Application.Features.Product.Commands.CreateProduct
             if (validationData.ProductNameCount > 0)
              throw new Exception($"Product '{request.Name}' already exists in this category");
 
-            var product = ProductAggregate.Create(request.CategoryId,request.Name,request.Description,request.Price,request.Stock);
+            var product = ProductAggregate.Create(request.CategoryId, request.Name, request.Description, request.Price);
            productWriteRepository.AddProduct(product);
           
              

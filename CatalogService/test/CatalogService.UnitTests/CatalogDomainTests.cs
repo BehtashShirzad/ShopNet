@@ -13,14 +13,13 @@ public class CatalogDomainTests
         var categoryId = Guid.NewGuid();
 
         var product = ProductAggregate.Create(
-            categoryId, "Laptop", "Description", 1200m, 4);
+            categoryId, "Laptop", "Description", 1200m);
 
         Assert.NotEqual(Guid.Empty, product.Id);
         Assert.Equal(categoryId, product.CategoryId);
         Assert.Equal("Laptop", product.Name);
         Assert.Equal("Description", product.Description);
         Assert.Equal(1200m, product.Price);
-        Assert.Equal(4, product.Stock);
         var domainEvent = Assert.IsType<ProductCreatedDomainEvent>(
             Assert.Single(product.DomainEvents));
         Assert.Equal(product.Id, domainEvent.ProductId);
@@ -38,14 +37,14 @@ public class CatalogDomainTests
         var categoryId = validCategory ? Guid.NewGuid() : Guid.Empty;
 
         Assert.ThrowsAny<ArgumentException>(() => ProductAggregate.Create(
-            categoryId, name, "Description", price, 1));
+            categoryId, name, "Description", price));
     }
 
     [Fact]
     public void ProductUpdate_ChangesFieldsAndRaisesExpectedEvents()
     {
         var product = ProductAggregate.Create(
-            Guid.NewGuid(), "Old", "Old description", 10m, 1);
+            Guid.NewGuid(), "Old", "Old description", 10m);
         product.ClearEvents();
         var newCategoryId = Guid.NewGuid();
 
@@ -64,7 +63,7 @@ public class CatalogDomainTests
     {
         var categoryId = Guid.NewGuid();
         var product = ProductAggregate.Create(
-            categoryId, "Product", "Description", 10m, 1);
+            categoryId, "Product", "Description", 10m);
         product.ClearEvents();
 
         product.Update(categoryId, "Product", 10m, "Description");
@@ -76,7 +75,7 @@ public class CatalogDomainTests
     public void ProductUpdate_RejectsInvalidPrice()
     {
         var product = ProductAggregate.Create(
-            Guid.NewGuid(), "Product", "Description", 10m, 1);
+            Guid.NewGuid(), "Product", "Description", 10m);
 
         Assert.ThrowsAny<ArgumentException>(() =>
             product.Update(null, null, 0m, null));

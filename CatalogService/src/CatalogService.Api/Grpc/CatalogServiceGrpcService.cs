@@ -22,8 +22,7 @@ namespace CatalogService.Api.Grpc
             {
                 Id = result?.Id.ToString(),
                 Name = result?.Name,
-                Price = Convert.ToDouble(result?.Price),
-                Stock = result?.Stock??0
+                Price = Convert.ToDouble(result?.Price)
             };
         }
         

@@ -1,5 +1,8 @@
 # Catalog → Inventory: stage 1
 
+> Historical checkpoint: Catalog Stock is removed by the later
+> [inventory ownership cutover](INVENTORY-OWNERSHIP-CUTOVER.md).
+
 This stage prepares Catalog only. Cart, Order and Inventory implementations are
 unchanged. Catalog still accepts and returns legacy `Stock`, including protobuf
 field 5. No stock data is dropped or copied by this migration.

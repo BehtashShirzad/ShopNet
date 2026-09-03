@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CatalogService.Application.Features.Product.Queries.GetProduct
 {
 
-    public record GetProductDto(Guid Id,string Name,decimal Price, int Stock);
+    public record GetProductDto(Guid Id, string Name, decimal Price);
     public record GetProductQuery(Guid Id):IQuery<GetProductDto?>;
     public class GetProductQueryHandler(IProductReadRepository productReadRepository) : IQueryHandler<GetProductQuery, GetProductDto?>
     {
@@ -20,7 +20,7 @@ namespace CatalogService.Application.Features.Product.Queries.GetProduct
            
             return product is null
                 ? null
-                : new GetProductDto(product.Id, product.Name, product.Price, product.Stock);
+                : new GetProductDto(product.Id, product.Name, product.Price);
         }
     }
      

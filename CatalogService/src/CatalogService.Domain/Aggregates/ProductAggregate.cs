@@ -17,9 +17,8 @@ namespace CatalogService.Domain.Aggregates
         public string Name { get; private set; } = null!;
         public string? Description { get; private set; }
         public decimal Price { get; private set; }
-        public int Stock{get;private set;}
 
-        public static ProductAggregate Create(Guid categoryId, string name, string description, decimal price,int stock)
+        public static ProductAggregate Create(Guid categoryId, string name, string description, decimal price)
         {
             Guard.Against.NullOrEmpty(
             categoryId, nameof(categoryId),
@@ -41,8 +40,7 @@ namespace CatalogService.Domain.Aggregates
                 Name = name,
                 Description = description,
                 Price = price,
-                CategoryId = categoryId,
-                Stock = stock
+                CategoryId = categoryId
             };
 
             product.RaiseEvent(new ProductCreatedDomainEvent(product.Id));
