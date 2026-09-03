@@ -1,5 +1,8 @@
 using MassTransit;
 using ShopNet.Contracts;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace OrderService.IntegrationTests;
 
@@ -11,7 +14,9 @@ public class OrderRabbitMqIntegrationTests(OrderContainersFixture fixture)
     {
         var received = new TaskCompletionSource<OrderBusProbe>(
             TaskCreationOptions.RunContinuationsAsynchronously);
-        var bus = MassTransit.Bus.Factory.CreateUsingRabbitMq(configuration =>
+        var builder = Host.CreateApplicationBuilder();
+        builder.Logging.SetMinimumLevel(LogLevel.Error);
+        builder.Services.AddMassTransit(registration => registration.UsingRabbitMq((_, configuration) =>
         {
             configuration.Host(new Uri(fixture.RabbitMqConnectionString));
             configuration.ReceiveEndpoint($"order-test-{Guid.NewGuid():N}", endpoint =>
@@ -22,8 +27,10 @@ public class OrderRabbitMqIntegrationTests(OrderContainersFixture fixture)
                     return Task.CompletedTask;
                 });
             });
-        });
-        await bus.StartAsync();
+        }));
+        using var host = builder.Build();
+        var bus = host.Services.GetRequiredService<IBus>();
+        await host.StartAsync();
 
         try
         {
@@ -36,7 +43,7 @@ public class OrderRabbitMqIntegrationTests(OrderContainersFixture fixture)
         }
         finally
         {
-            await bus.StopAsync();
+            await host.StopAsync();
         }
     }
 }

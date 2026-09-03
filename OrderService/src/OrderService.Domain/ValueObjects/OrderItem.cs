@@ -8,7 +8,7 @@ namespace OrderService.Domain.ValueObjects
     public class OrderItem  : ValueObject
     {
          public Guid ProductId { get; private set; }
-    public string ProductName { get; private set; }
+    public string ProductName { get; private set; } = string.Empty;
     public decimal Price { get; private set; }
     public int Quantity { get; private set; }
 

@@ -30,7 +30,8 @@ namespace OrderService.Application.DomainEventHandler;
               var integrationEvent = new OrderCreatedEvent(
                 notification.DomainEvent.OrderId, notification.DomainEvent.CustomerId,
                 items
-            );
+            ) { EventId = notification.DomainEvent.Id,
+                OccurredOnUtc = new DateTimeOffset(notification.DomainEvent.OccurredOn) };
           await  integrationEventBus.PublishAsync(integrationEvent,cancellationToken);
 
         }

@@ -14,7 +14,8 @@ public enum OrderStatus
     Confirmed = 4,
     Shipped = 5,
     Cancelled = 6,
-    Failed = 7
+    Failed = 7,
+    RequiresAttention = 8
 }
 
 

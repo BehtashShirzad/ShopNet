@@ -1,26 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Domain.Abstractions;
 using MassTransit;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using OrderService.Application.Commands;
-using OrderService.Domain;
 using ShopNet.Contracts.IntegrationEvents;
 
-namespace OrderService.Application.IntegrationEventHandler
+namespace OrderService.Application.IntegrationEventHandler;
+
+// A fresh application scope keeps the pipeline's SQL transaction and BusOutbox together,
+// without inheriting the consumer's publishing endpoint. Ack only after Send/commit succeeds.
+public sealed class CartCheckedOutEventHandler(IServiceScopeFactory scopes) : IConsumer<CartCheckedOutEvent>
 {
-    public class CartCheckedOutEventHandler(ISender sender) : IConsumer<CartCheckedOutEvent>
+    public async Task Consume(ConsumeContext<CartCheckedOutEvent> context)
     {
-        public async Task Consume(ConsumeContext<CartCheckedOutEvent> context)
-        {
-            var createOrderCommand = new CreateOrderCommand(context.Message.CartId,
-             context.Message.CustomerId,
-              context.Message.Items, 
-              context.Message.TotalPrice);
-            await sender.Send(createOrderCommand);
-            
-        }
+        await using var scope = scopes.CreateAsyncScope();
+        await scope.ServiceProvider.GetRequiredService<ISender>().Send(
+            new CreateOrderCommand(context.Message.CartId, context.Message.CustomerId,
+                context.Message.Items, context.Message.TotalPrice), context.CancellationToken);
     }
 }

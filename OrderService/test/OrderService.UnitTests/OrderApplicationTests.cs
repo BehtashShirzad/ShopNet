@@ -13,6 +13,8 @@ using OrderService.Domain.DomanEvents;
 using ShopNet.Contracts.IntegrationEvents;
 using ShopNet.Contracts.SharedDtos;
 using Application.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
+using OrderService.Application.Inventory;
 
 namespace OrderService.UnitTests;
 
@@ -21,12 +23,14 @@ public class OrderApplicationTests
     [Fact]
     public async Task CreateOrder_IsIdempotentByCartId()
     {
-        var existing = OrderAggregate.Create(Guid.NewGuid(), Guid.NewGuid());
+        var command = NewCommand(Guid.NewGuid());
+        var existing = OrderAggregate.Create(command.CustomerId, command.CartId);
+        foreach (var item in command.Items)
+            existing.AddItem(item.ProductId, item.ProductName, item.Price, item.Quantity);
         var repository = new Mock<IOrderRepository>();
         repository.Setup(x => x.GetByCartId(existing.CartId)).ReturnsAsync(existing);
 
-        await new CreateOrderCommandHandler(repository.Object).Handle(
-            NewCommand(existing.CartId), CancellationToken.None);
+        await CreateHandler(repository.Object).Handle(command, CancellationToken.None);
 
         repository.Verify(x => x.AddAsync(It.IsAny<OrderAggregate>()), Times.Never);
     }
@@ -43,7 +47,7 @@ public class OrderApplicationTests
             .Returns(Task.CompletedTask);
         var command = NewCommand(Guid.NewGuid());
 
-        await new CreateOrderCommandHandler(repository.Object)
+        await CreateHandler(repository.Object)
             .Handle(command, CancellationToken.None);
 
         Assert.NotNull(added);
@@ -96,7 +100,8 @@ public class OrderApplicationTests
             .Callback<CreateOrderCommand, CancellationToken>((command, _) => sent = command)
             .Returns(Task.CompletedTask);
 
-        await new CartCheckedOutEventHandler(sender.Object).Consume(context.Object);
+        using var services = new ServiceCollection().AddSingleton(sender.Object).BuildServiceProvider();
+        await new CartCheckedOutEventHandler(services.GetRequiredService<IServiceScopeFactory>()).Consume(context.Object);
 
         Assert.NotNull(sent);
         Assert.Equal(message.CartId, sent.CartId);
@@ -138,6 +143,9 @@ public class OrderApplicationTests
 
         Assert.Equal("Order not found", exception.Message);
     }
+
+    private static CreateOrderCommandHandler CreateHandler(IOrderRepository repository) => new(repository,
+        Mock.Of<IInventoryCommandSender>(), Mock.Of<IOrderTransactionLock>(), TimeProvider.System, new OrderInventoryOptions());
 
     private static CreateOrderCommand NewCommand(Guid cartId) => new(
         cartId,

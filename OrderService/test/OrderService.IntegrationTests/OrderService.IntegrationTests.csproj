@@ -16,5 +16,7 @@
     <ProjectReference Include="../../src/OrderService.Application/OrderService.Application.csproj" />
     <ProjectReference Include="../../src/OrderService.Domain/OrderService.Domain.csproj" />
     <ProjectReference Include="../../src/OrderService.Infrastructure/OrderService.Infrastructure.csproj" />
+    <!-- Test-only composition; production Order must never reference another service implementation. -->
+    <ProjectReference Include="../../../InventoryService/src/InventoryService.Infrastructure/InventoryService.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

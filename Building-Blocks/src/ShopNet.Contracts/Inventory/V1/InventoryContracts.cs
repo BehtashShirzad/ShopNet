@@ -14,7 +14,8 @@ public sealed record ReserveInventory(Guid OrderId, Guid ReservationRequestId,
 public sealed record CommitInventory(Guid OrderId, Guid ReservationRequestId);
 public sealed record ReleaseInventory(Guid OrderId, Guid ReservationRequestId, InventoryReleaseReason Reason);
 public enum InventoryReleaseReason { OrderCancelled = 1, PaymentFailed = 2, Compensation = 3 }
-
+   
+ 
 // Restricted to warehouse/admin publishers. ReferenceId identifies a single physical receipt.
 public sealed record ReceiveInventoryStock(Guid ProductId, int Quantity, Guid ReferenceId);
 
