@@ -23,7 +23,9 @@ public class CatalogDomainTests
         Assert.Equal(4, product.Stock);
         var domainEvent = Assert.IsType<ProductCreatedDomainEvent>(
             Assert.Single(product.DomainEvents));
-        Assert.Equal(product.Id, domainEvent.Id);
+        Assert.Equal(product.Id, domainEvent.ProductId);
+        Assert.NotEqual(Guid.Empty, domainEvent.Id);
+        Assert.NotEqual(product.Id, domainEvent.Id);
     }
 
     [Theory]

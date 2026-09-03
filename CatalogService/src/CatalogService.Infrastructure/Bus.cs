@@ -1,19 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Application.Abstractions.Contracts;
 using MassTransit;
 using ShopNet.Contracts.Interfaces;
 
-namespace CatalogService.Infrastructure
+namespace CatalogService.Infrastructure;
+
+// The scoped endpoint is intercepted by the EF bus outbox.
+// Injecting IBus here would bypass that transaction.
+public sealed class Bus(IPublishEndpoint publishEndpoint) : IIntegrationEventBus
 {
-    public class Bus(IBus bus): IIntegrationEventBus
+    public Task PublishAsync<T>(
+        T integrationEvent,
+        CancellationToken cancellationToken = default)
+        where T : IIntegrationEvent
     {
-        public async Task PublishAsync<T>(T integrationEvent, CancellationToken cancellationToken = default) where T : IIntegrationEvent
-        {
-            await bus.Publish(integrationEvent,cancellationToken);
-           
-        }
+        return publishEndpoint.Publish(integrationEvent, cancellationToken);
     }
 }

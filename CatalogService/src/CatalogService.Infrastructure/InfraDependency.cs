@@ -30,13 +30,26 @@ namespace CatalogService.Infrastructure
            services.AddScoped<IDomainEventBus, DomainEventBus>();
            services.AddScoped<IIntegrationEventBus, Bus>();
              services.AddScoped<IDomainEventDispatcher, MediatrDomainEventDispatcher>();
-             services.AddScoped<IApplicationDbContext, WriteDbContext>();
+             services.AddScoped<IApplicationDbContext>(provider =>
+                 provider.GetRequiredService<WriteDbContext>());
              services.AddScoped<IProductWriteRepository,ProductWriteRepository>();
              services.AddScoped<ICategoryWriteRepository,CategoryWriteRepository>();
              services.AddScoped<ICategoryReadRepository, CategoryReadRepository>();
              services.AddScoped<IProductReadRepository, ProductReadRepository>();
              services.AddMassTransit(x =>
              {
+                 x.AddEntityFrameworkOutbox<WriteDbContext>(outbox =>
+                 {
+                     outbox.UseSqlServer();
+                     outbox.UseBusOutbox(delivery =>
+                     {
+                         // Stage 1 must retain events until Inventory has a durable subscription.
+                         if (!bool.TryParse(configuration["CatalogOutbox:DeliveryEnabled"], out var enabled)
+                             || !enabled)
+                             delivery.DisableDeliveryService();
+                     });
+                     outbox.QueryDelay = TimeSpan.FromSeconds(1);
+                 });
                  x.AddConsumers(typeof(Application.DependencyInjection).Assembly);
                  x.SetKebabCaseEndpointNameFormatter();
                     

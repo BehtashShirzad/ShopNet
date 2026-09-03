@@ -1,21 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Domain.Abstractions;
 
-namespace CatalogService.Domain.DomainEvents
-{
-    public record ProductCreatedDomainEvent : IDomainEvent 
-    {
-        public ProductCreatedDomainEvent(Guid id)
-        {
-            OccurredOn = DateTime.UtcNow;
-            Id=id;
-            
-        }
-        public Guid Id {get;set;}
+namespace CatalogService.Domain.DomainEvents;
 
-        public DateTime OccurredOn{get;init;}
+public sealed record ProductCreatedDomainEvent : IDomainEvent
+{
+    public ProductCreatedDomainEvent(Guid productId)
+    {
+        if (productId == Guid.Empty)
+            throw new ArgumentException("ProductId cannot be empty.", nameof(productId));
+
+        ProductId = productId;
     }
+
+    public Guid Id { get; init; } = IdGenerator.New();
+    public Guid ProductId { get; }
+    public DateTime OccurredOn { get; init; } = DateTime.UtcNow;
 }
