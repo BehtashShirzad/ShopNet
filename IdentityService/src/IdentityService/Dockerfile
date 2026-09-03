@@ -9,11 +9,11 @@ ENV DOTNET_CLI_TELEMETRY_OPTOUT=1 \
 
 COPY ["Directory.Build.targets", "."]
 COPY ["IdentityService/src/IdentityService/IdentityService.csproj", "IdentityService/src/IdentityService/"]
-RUN --mount=type=cache,id=shopnet-nuget,target=/root/.nuget/packages \
+RUN --mount=type=cache,id=shopnet-nuget-v2,target=/root/.nuget/packages,sharing=locked \
     dotnet restore "IdentityService/src/IdentityService/IdentityService.csproj"
 
 COPY . .
-RUN --mount=type=cache,id=shopnet-nuget,target=/root/.nuget/packages \
+RUN --mount=type=cache,id=shopnet-nuget-v2,target=/root/.nuget/packages,sharing=locked \
     dotnet publish "IdentityService/src/IdentityService/IdentityService.csproj" \
     --configuration "$BUILD_CONFIGURATION" --output /app/publish --no-restore \
     /p:UseAppHost=false

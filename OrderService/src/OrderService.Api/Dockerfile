@@ -15,11 +15,11 @@ COPY ["OrderService/src/OrderService.Domain/OrderService.Domain.csproj", "OrderS
 COPY ["OrderService/src/OrderService.Application/OrderService.Application.csproj", "OrderService/src/OrderService.Application/"]
 COPY ["OrderService/src/OrderService.Infrastructure/OrderService.Infrastructure.csproj", "OrderService/src/OrderService.Infrastructure/"]
 COPY ["OrderService/src/OrderService.Api/OrderService.Api.csproj", "OrderService/src/OrderService.Api/"]
-RUN --mount=type=cache,id=shopnet-nuget,target=/root/.nuget/packages \
+RUN --mount=type=cache,id=shopnet-nuget-v2,target=/root/.nuget/packages,sharing=locked \
     dotnet restore "OrderService/src/OrderService.Api/OrderService.Api.csproj"
 
 COPY . .
-RUN --mount=type=cache,id=shopnet-nuget,target=/root/.nuget/packages \
+RUN --mount=type=cache,id=shopnet-nuget-v2,target=/root/.nuget/packages,sharing=locked \
     dotnet publish "OrderService/src/OrderService.Api/OrderService.Api.csproj" \
     --configuration "$BUILD_CONFIGURATION" --output /app/publish --no-restore \
     /p:UseAppHost=false

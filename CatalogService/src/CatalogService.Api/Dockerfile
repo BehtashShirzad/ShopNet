@@ -16,11 +16,11 @@ COPY ["CatalogService/src/CatalogService.Domain/CatalogService.Domain.csproj", "
 COPY ["CatalogService/src/CatalogService.Application/CatalogService.Application.csproj", "CatalogService/src/CatalogService.Application/"]
 COPY ["CatalogService/src/CatalogService.Infrastructure/CatalogService.Infrastructure.csproj", "CatalogService/src/CatalogService.Infrastructure/"]
 COPY ["CatalogService/src/CatalogService.Api/CatalogService.Api.csproj", "CatalogService/src/CatalogService.Api/"]
-RUN --mount=type=cache,id=shopnet-nuget,target=/root/.nuget/packages \
+RUN --mount=type=cache,id=shopnet-nuget-v2,target=/root/.nuget/packages,sharing=locked \
     dotnet restore "CatalogService/src/CatalogService.Api/CatalogService.Api.csproj"
 
 COPY . .
-RUN --mount=type=cache,id=shopnet-nuget,target=/root/.nuget/packages \
+RUN --mount=type=cache,id=shopnet-nuget-v2,target=/root/.nuget/packages,sharing=locked \
     dotnet publish "CatalogService/src/CatalogService.Api/CatalogService.Api.csproj" \
     --configuration "$BUILD_CONFIGURATION" --output /app/publish --no-restore \
     /p:UseAppHost=false

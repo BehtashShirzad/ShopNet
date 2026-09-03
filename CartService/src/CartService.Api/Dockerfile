@@ -15,11 +15,11 @@ COPY ["CartService/src/CartService.Domain/CartService.Domain.csproj", "CartServi
 COPY ["CartService/src/CartService.Application/CartService.Application.csproj", "CartService/src/CartService.Application/"]
 COPY ["CartService/src/CartService.Infrastructure/CartService.Infrastructure.csproj", "CartService/src/CartService.Infrastructure/"]
 COPY ["CartService/src/CartService.Api/CartService.Api.csproj", "CartService/src/CartService.Api/"]
-RUN --mount=type=cache,id=shopnet-nuget,target=/root/.nuget/packages \
+RUN --mount=type=cache,id=shopnet-nuget-v2,target=/root/.nuget/packages,sharing=locked \
     dotnet restore "CartService/src/CartService.Api/CartService.Api.csproj"
 
 COPY . .
-RUN --mount=type=cache,id=shopnet-nuget,target=/root/.nuget/packages \
+RUN --mount=type=cache,id=shopnet-nuget-v2,target=/root/.nuget/packages,sharing=locked \
     dotnet publish "CartService/src/CartService.Api/CartService.Api.csproj" \
     --configuration "$BUILD_CONFIGURATION" --output /app/publish --no-restore \
     /p:UseAppHost=false

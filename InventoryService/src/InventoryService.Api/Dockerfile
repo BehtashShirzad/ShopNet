@@ -14,11 +14,11 @@ COPY ["InventoryService/src/InventoryService.Domain/InventoryService.Domain.cspr
 COPY ["InventoryService/src/InventoryService.Application/InventoryService.Application.csproj", "InventoryService/src/InventoryService.Application/"]
 COPY ["InventoryService/src/InventoryService.Infrastructure/InventoryService.Infrastructure.csproj", "InventoryService/src/InventoryService.Infrastructure/"]
 COPY ["InventoryService/src/InventoryService.Api/InventoryService.Api.csproj", "InventoryService/src/InventoryService.Api/"]
-RUN --mount=type=cache,id=shopnet-nuget,target=/root/.nuget/packages \
+RUN --mount=type=cache,id=shopnet-nuget-v2,target=/root/.nuget/packages,sharing=locked \
     dotnet restore "InventoryService/src/InventoryService.Api/InventoryService.Api.csproj"
 
 COPY . .
-RUN --mount=type=cache,id=shopnet-nuget,target=/root/.nuget/packages \
+RUN --mount=type=cache,id=shopnet-nuget-v2,target=/root/.nuget/packages,sharing=locked \
     dotnet publish "InventoryService/src/InventoryService.Api/InventoryService.Api.csproj" \
     --configuration "$BUILD_CONFIGURATION" --output /app/publish --no-restore \
     /p:UseAppHost=false
