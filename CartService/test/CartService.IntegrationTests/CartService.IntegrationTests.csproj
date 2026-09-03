@@ -8,6 +8,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="10.0.0" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.80.0" />
+    <PackageReference Include="Testcontainers.MsSql" Version="4.14.0" />
     <PackageReference Include="Testcontainers.RabbitMq" Version="4.14.0" />
     <PackageReference Include="Testcontainers.Redis" Version="4.14.0" />
   </ItemGroup>
@@ -16,5 +18,7 @@
     <ProjectReference Include="../../src/CartService.Application/CartService.Application.csproj" />
     <ProjectReference Include="../../src/CartService.Domain/CartService.Domain.csproj" />
     <ProjectReference Include="../../src/CartService.Infrastructure/CartService.Infrastructure.csproj" />
+    <!-- Real Order is composed only in integration tests, never referenced by production Cart. -->
+    <ProjectReference Include="../../../OrderService/src/OrderService.Infrastructure/OrderService.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

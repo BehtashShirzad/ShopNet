@@ -23,9 +23,11 @@ namespace CartService.Application.Commands
         public async Task<Guid> Handle(AddCartCommand request, CancellationToken cancellationToken)
         {
           var cart = CartAggregate.Create(request.UserId);
+          if (request.Products is null || request.Products.Count > 100 || request.Products.Any(x => x is null || x.Quantity <= 0))
+              throw new ArgumentException("Provide at most 100 valid product lines.");
           foreach(var item in request.Products)
             {
-                var product = await catalogService.GetProduct(item.ProductId);
+                var product = await catalogService.GetProduct(item.ProductId, cancellationToken);
                 if(product is null)
                  throw new Exception("Product Not Found");
 

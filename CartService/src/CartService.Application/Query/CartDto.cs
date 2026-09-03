@@ -6,6 +6,10 @@ using CartService.Application.Commands;
 
 namespace CartService.Application.Query
 {
-    public record CartDto(List<ProductViewModelOutput>Products,decimal TotalPrice);
+    public record CartDto(List<ProductViewModelOutput>Products,decimal TotalPrice)
+    {
+        public bool IsCheckedOut { get; init; }
+        public Guid? CheckoutEventId { get; init; }
+    }
     
 }

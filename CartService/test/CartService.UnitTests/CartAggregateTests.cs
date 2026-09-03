@@ -105,6 +105,7 @@ public class CartAggregateTests
     public void Checkout_MarksCartAsCheckedOut()
     {
         var cart = CartAggregate.Create(Guid.NewGuid());
+        cart.AddItem(Guid.NewGuid(), "Product", 1, 1);
 
         cart.Checkout();
 

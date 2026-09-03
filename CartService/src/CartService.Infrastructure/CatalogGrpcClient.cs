@@ -1,40 +1,29 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CartService.Application;
-using CartService.Application.Commands;
 using CartService.Application.Query;
 using CatalogService.API.Grpc.Protos;
+using Grpc.Core;
 
-namespace CartService.Infrastructure
+namespace CartService.Infrastructure;
+
+public sealed class CatalogGrpcClient(CatalogProtoService.CatalogProtoServiceClient client, GrpcCallOptions options) : ICatalogService
 {
-   public class CatalogGrpcClient : ICatalogService
-{
-    private readonly CatalogProtoService.CatalogProtoServiceClient _client;
-
-    public CatalogGrpcClient(
-        CatalogProtoService.CatalogProtoServiceClient client)
+    public async Task<GetProductDto?> GetProduct(Guid productId, CancellationToken cancellationToken = default)
     {
-        _client = client;
-    }
-    
-    public async Task<GetProductDto?> GetProduct(Guid productId)
-    {
-        var response = await _client.GetProductAsync(
-            new GetProductRequest
-            {
-                ProductId = productId.ToString()
-            });
+        ProductResponse response;
+        try
+        {
+            response = await client.GetProductAsync(new GetProductRequest { ProductId = productId.ToString() },
+                deadline: DateTime.UtcNow.Add(options.Timeout), cancellationToken: cancellationToken);
+        }
+        catch (RpcException exception) when (exception.StatusCode == StatusCode.NotFound) { return null; }
 
-        return new GetProductDto(
-            Guid.Parse(response.Id),
-            response.Name,
-            (decimal)response.Price,
-            response.Stock);
+        if (!Guid.TryParse(response.Id, out var id) || id != productId || id == Guid.Empty ||
+            string.IsNullOrWhiteSpace(response.Name) || !double.IsFinite(response.Price) ||
+            response.Price <= 0 || response.Price >= 10000000000000000d)
+            throw new RpcException(new Status(StatusCode.DataLoss, "Invalid Catalog response."));
+        var price = (decimal)response.Price;
+        if (decimal.Round(price, 2) != price)
+            throw new RpcException(new Status(StatusCode.DataLoss, "Catalog price must fit decimal(18,2)."));
+        return new GetProductDto(id, response.Name, price);
     }
-}
-
-    
-    
 }

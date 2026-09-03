@@ -5,6 +5,7 @@ using CartService.Application.Query;
 using CartService.Domain;
 using CartService.Domain.Aggregates;
 using Moq;
+using CartService.Application.Checkout;
 using ShopNet.Contracts.IntegrationEvents;
 
 namespace CartService.UnitTests;
@@ -22,8 +23,8 @@ public class CartApplicationTests
             .Callback<CartAggregate>(cart => stored = cart)
             .Returns(Task.CompletedTask);
         var catalog = new Mock<ICatalogService>();
-        catalog.Setup(x => x.GetProduct(productId))
-            .ReturnsAsync(new GetProductDto(productId, "Canonical name", 25m, 10));
+        catalog.Setup(x => x.GetProduct(productId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new GetProductDto(productId, "Canonical name", 25m));
         var command = new AddCartCommand([
             new ProductViewModelInput(productId, 2, 999m, "Untrusted name")
         ]) { UserId = userId };
@@ -45,7 +46,7 @@ public class CartApplicationTests
     {
         var repository = new Mock<IRepository>();
         var catalog = new Mock<ICatalogService>();
-        catalog.Setup(x => x.GetProduct(It.IsAny<Guid>()))
+        catalog.Setup(x => x.GetProduct(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((GetProductDto?)null);
         var command = new AddCartCommand([
             new ProductViewModelInput(Guid.NewGuid(), 1, 10m, "Missing")
@@ -89,8 +90,8 @@ public class CartApplicationTests
         repository.Setup(x => x.GetCart(cart.Id)).ReturnsAsync(cart);
         repository.Setup(x => x.StoreCart(cart)).Returns(Task.CompletedTask);
         var catalog = new Mock<ICatalogService>();
-        catalog.Setup(x => x.GetProduct(productId))
-            .ReturnsAsync(new GetProductDto(productId, "Server product", 14m, 8));
+        catalog.Setup(x => x.GetProduct(productId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new GetProductDto(productId, "Server product", 14m));
         var command = NewAddProductCommand(cart.Id, owner, productId);
 
         await new AddProductToCartCommandHandler(repository.Object, catalog.Object)
@@ -103,59 +104,53 @@ public class CartApplicationTests
     }
 
     [Fact]
-    public async Task Checkout_RejectsInsufficientStockWithoutPublishing()
+    public async Task Checkout_RejectsInsufficientInventoryWithoutEnqueueing()
     {
         var owner = Guid.NewGuid();
-        var productId = Guid.NewGuid();
+        var product = Guid.NewGuid();
         var cart = CartAggregate.Create(owner);
-        cart.AddItem(productId, "Product", 10m, 3);
+        cart.AddItem(product, "Product", 10, 3);
         var repository = new Mock<IRepository>();
         repository.Setup(x => x.GetCart(cart.Id)).ReturnsAsync(cart);
         var catalog = new Mock<ICatalogService>();
-        catalog.Setup(x => x.GetProduct(productId))
-            .ReturnsAsync(new GetProductDto(productId, "Product", 10m, 2));
-        var eventBus = new Mock<IIntegrationEventBus>();
-
-        var exception = await Assert.ThrowsAsync<Exception>(() =>
-            new CheckoutCartCommandHandler(repository.Object, catalog.Object, eventBus.Object)
-                .Handle(new CheckoutCartCommand(cart.Id, owner), CancellationToken.None));
-
-        Assert.Contains("out of stock", exception.Message);
+        catalog.Setup(x => x.GetProduct(product, It.IsAny<CancellationToken>())).ReturnsAsync(new GetProductDto(product, "Product", 10));
+        var inventory = new Mock<IInventoryAvailabilityClient>();
+        inventory.Setup(x => x.GetAvailabilityAsync(It.IsAny<Guid[]>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Dictionary<Guid, InventoryAvailability> { [product] = new(product, true, true, 2) });
+        var store = new Mock<ICartCheckoutStore>(MockBehavior.Strict);
+        var exception = await Assert.ThrowsAsync<CheckoutRejectedException>(() =>
+            new CheckoutCartCommandHandler(repository.Object, catalog.Object, inventory.Object, store.Object, TimeProvider.System)
+                .Handle(new(cart.Id, owner), default));
+        Assert.Equal("insufficient_stock", exception.Code);
         Assert.False(cart.IsCheckedOut);
-        eventBus.Verify(x => x.PublishAsync(
-            It.IsAny<CartCheckedOutEvent>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
-    public async Task Checkout_StoresCartAndPublishesCompleteEvent()
+    public async Task Checkout_AtomicallyStoresCompleteEvent()
     {
         var owner = Guid.NewGuid();
-        var productId = Guid.NewGuid();
+        var product = Guid.NewGuid();
         var cart = CartAggregate.Create(owner);
-        cart.AddItem(productId, "Product", 10m, 3);
+        cart.AddItem(product, "Product", 10, 3);
         var repository = new Mock<IRepository>();
         repository.Setup(x => x.GetCart(cart.Id)).ReturnsAsync(cart);
-        repository.Setup(x => x.StoreCart(cart)).Returns(Task.CompletedTask);
         var catalog = new Mock<ICatalogService>();
-        catalog.Setup(x => x.GetProduct(productId))
-            .ReturnsAsync(new GetProductDto(productId, "Product", 10m, 3));
-        CartCheckedOutEvent? published = null;
-        var eventBus = new Mock<IIntegrationEventBus>();
-        eventBus.Setup(x => x.PublishAsync(
-                It.IsAny<CartCheckedOutEvent>(), It.IsAny<CancellationToken>()))
-            .Callback<CartCheckedOutEvent, CancellationToken>((message, _) => published = message)
-            .Returns(Task.CompletedTask);
-
-        var result = await new CheckoutCartCommandHandler(
-                repository.Object, catalog.Object, eventBus.Object)
-            .Handle(new CheckoutCartCommand(cart.Id, owner), CancellationToken.None);
-
+        catalog.Setup(x => x.GetProduct(product, It.IsAny<CancellationToken>())).ReturnsAsync(new GetProductDto(product, "Product", 10));
+        var inventory = new Mock<IInventoryAvailabilityClient>();
+        inventory.Setup(x => x.GetAvailabilityAsync(It.IsAny<Guid[]>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Dictionary<Guid, InventoryAvailability> { [product] = new(product, true, true, 3) });
+        CartCheckedOutEvent? message = null;
+        var store = new Mock<ICartCheckoutStore>();
+        store.Setup(x => x.CompleteAsync(cart, It.IsAny<CartCheckedOutEvent>(), It.IsAny<CancellationToken>()))
+            .Callback<CartAggregate, CartCheckedOutEvent, CancellationToken>((_, value, _) => message = value).Returns(Task.CompletedTask);
+        var result = await new CheckoutCartCommandHandler(repository.Object, catalog.Object, inventory.Object, store.Object, TimeProvider.System)
+            .Handle(new(cart.Id, owner), default);
         Assert.Equal(cart.Id, result);
         Assert.True(cart.IsCheckedOut);
-        Assert.NotNull(published);
-        Assert.Equal(cart.Id, published.CartId);
-        Assert.Equal(30m, published.TotalPrice);
-        Assert.Single(published.Items);
+        Assert.Equal(cart.CheckoutEventId, message!.EventId);
+        Assert.Equal(cart.CheckedOutAtUtc, message.OccurredOnUtc);
+        Assert.Equal(30, message.TotalPrice);
+        repository.Verify(x => x.StoreCart(It.IsAny<CartAggregate>()), Times.Never);
     }
 
     [Fact]

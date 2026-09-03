@@ -29,7 +29,9 @@ namespace CartService.Application.Commands
         throw new Exception("Cart not found");
           if(cart.CustomerId!= request.UserId)
                 throw new Exception("Cart not found");
-         var product = await catalogService.GetProduct(request.ProductDto.ProductId);
+         if (cart.IsCheckedOut) throw new CartService.Application.Checkout.CheckoutRejectedException("cart_closed", "A checked-out cart cannot be modified.");
+         if (request.ProductDto is null || request.ProductDto.Quantity <= 0) throw new ArgumentException("A valid product quantity is required.");
+         var product = await catalogService.GetProduct(request.ProductDto.ProductId, cancellationToken);
                 if(product is null)
                  throw new Exception("Product Not Found");
             cart.AddItem(product.Id,

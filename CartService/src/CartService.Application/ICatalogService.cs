@@ -8,6 +8,6 @@ namespace CartService.Application
 {
     public interface ICatalogService
     {
-         Task<GetProductDto?> GetProduct(Guid productId);
+         Task<GetProductDto?> GetProduct(Guid productId, CancellationToken cancellationToken = default);
     }
 }

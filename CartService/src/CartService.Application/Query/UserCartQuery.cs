@@ -25,7 +25,7 @@ namespace CartService.Application.Query
                             .Items
                             .Select(i => new ProductViewModelOutput(i.ProductId,i.Quantity,i.Price,i.ProductName))
                             .ToList();
-            return new CartDto(prodocts, cart.TotalPrice);
+            return new CartDto(prodocts, cart.TotalPrice) { IsCheckedOut = cart.IsCheckedOut, CheckoutEventId = cart.CheckoutEventId };
         }
     }
 

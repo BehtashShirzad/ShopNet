@@ -1,0 +1,16 @@
+syntax = "proto3";
+option csharp_namespace = "InventoryService.Grpc.V1";
+package inventory.v1;
+
+// Advisory read only: availability is not a reservation or a checkout guarantee.
+service InventoryAvailabilityService {
+  rpc GetAvailability (GetAvailabilityRequest) returns (GetAvailabilityResponse);
+}
+message GetAvailabilityRequest { repeated string product_ids = 1; }
+message GetAvailabilityResponse { repeated ProductAvailability items = 1; }
+message ProductAvailability {
+  string product_id = 1;
+  bool exists = 2;
+  bool is_active = 3;
+  int32 available_quantity = 4;
+}

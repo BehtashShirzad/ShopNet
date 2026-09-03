@@ -11,7 +11,7 @@ public class CartInfrastructureAndApiTests
     [Fact]
     public async Task Repository_RoundTripsSerializedCart()
     {
-        var redis = new InMemoryRedisService();
+        var redis = new InMemoryCartPersistence();
         var repository = new CartServiceRepository(redis);
         var cart = CartAggregate.Create(Guid.NewGuid());
         cart.AddItem(Guid.NewGuid(), "Product", 12m, 2);
@@ -29,7 +29,7 @@ public class CartInfrastructureAndApiTests
     [Fact]
     public async Task Repository_ReturnsNullForMissingCart()
     {
-        var repository = new CartServiceRepository(new InMemoryRedisService());
+        var repository = new CartServiceRepository(new InMemoryCartPersistence());
 
         Assert.Null(await repository.GetCart(Guid.NewGuid()));
     }
@@ -60,17 +60,20 @@ public class CartInfrastructureAndApiTests
         Assert.Equal(Guid.Parse("00000000-0000-0000-0000-000000000011"), accessor.GetUserId());
     }
 
-    private sealed class InMemoryRedisService : IRedisService
+    private sealed class InMemoryCartPersistence : ICartRedisPersistence
     {
         private readonly Dictionary<string, string> _values = [];
 
-        public Task<string?> GetValue(string key) =>
-            Task.FromResult(_values.GetValueOrDefault(key));
+        public Task<string?> ReadAsync(Guid id) =>
+            Task.FromResult(_values.GetValueOrDefault(id.ToString()));
 
-        public Task SetValue(string key, string value, TimeSpan? expiry = null)
+        public Task<bool> SaveAsync(Guid id, string? expected, string value)
         {
-            _values[key] = value;
-            return Task.CompletedTask;
+            if (_values.GetValueOrDefault(id.ToString()) != expected) return Task.FromResult(false);
+            _values[id.ToString()] = value;
+            return Task.FromResult(true);
         }
+        public Task<bool> CheckoutAsync(Guid id, string expected, string value, Guid eventId, string message, CancellationToken ct)
+            => throw new NotSupportedException();
     }
 }

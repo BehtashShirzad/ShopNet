@@ -44,7 +44,7 @@ namespace CartService.Domain.Entities
         internal void IncreaseQuantity(int quantity)
         {
             Guard.Against.NegativeOrZero(quantity, nameof(quantity));
-            Quantity += quantity;
+            Quantity = checked(Quantity + quantity);
         }
 
         internal void ChangeQuantity(int quantity)

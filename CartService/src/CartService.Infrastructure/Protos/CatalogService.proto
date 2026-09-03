@@ -16,5 +16,6 @@ message ProductResponse {
   string id = 1;
   string name = 2;
   double price = 4;
-    int32   Stock = 5;
+  reserved 5;
+  reserved "Stock";
 }

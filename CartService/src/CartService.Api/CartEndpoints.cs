@@ -12,10 +12,11 @@ namespace CartService.Api
        public static IEndpointRouteBuilder MapCartEndpoints(this IEndpointRouteBuilder endpoint)
         {
             var map = endpoint.MapGroup("cart");
+            map.AddEndpointFilter<CartFailureFilter>();
             map.MapPost("/items", AddCart);
             map.MapGet("/{cartId}",GetCartItems);
             map.MapPut("/items/{cartId}",AddProductToCart);
-            map.MapPost("/checkout/{cartId}",Checkout).RequireAuthorization();;
+            map.MapPost("/checkout/{cartId}",Checkout).RequireAuthorization();
             return map;
         }
 
@@ -50,12 +51,12 @@ namespace CartService.Api
              
         }
 
-        private static async Task<IResult> Checkout([FromRoute]Guid CartId,[FromServices]IHttpContextAccessor contextAccessor,[FromServices]ISender sender)
+        private static async Task<IResult> Checkout([FromRoute]Guid CartId,[FromServices]IHttpContextAccessor contextAccessor,[FromServices]ISender sender, CancellationToken cancellationToken)
         {
             
             var userId = contextAccessor.GetUserId();
             var command   =  new CheckoutCartCommand(CartId,userId);
-            var result =await sender.Send(command);
+            var result =await sender.Send(command, cancellationToken);
             return TypedResults.Ok(result);
 
         }
