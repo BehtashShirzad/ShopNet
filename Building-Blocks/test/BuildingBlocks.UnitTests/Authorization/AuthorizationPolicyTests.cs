@@ -1,13 +1,39 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using ShopNet.Authorization;
 
 namespace BuildingBlocks.UnitTests.Authorization;
 
 public sealed class AuthorizationPolicyTests
 {
+    [Fact]
+    public void JwtBearer_UsesConfiguredAuthorityAsValidIssuer()
+    {
+        const string authority = "http://localhost:8080/realms/shopnet";
+        var services = new ServiceCollection();
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["Keycloak:Authority"] = authority,
+            ["Keycloak:MetadataAddress"] = "http://keycloak:8080/realms/shopnet/.well-known/openid-configuration",
+            ["Keycloak:Audience"] = "shopnet-api",
+            ["Keycloak:RequireHttpsMetadata"] = "false"
+        }).Build();
+
+        services.AddLogging();
+        services.AddShopNetAuthorization(configuration);
+
+        using var provider = services.BuildServiceProvider();
+        var options = provider.GetRequiredService<IOptionsMonitor<JwtBearerOptions>>()
+            .Get(JwtBearerDefaults.AuthenticationScheme);
+
+        Assert.Equal(authority, options.TokenValidationParameters.ValidIssuer);
+        Assert.Equal("shopnet-api", options.TokenValidationParameters.ValidAudience);
+    }
+
     [Fact]
     public async Task PermissionPolicy_AcceptsOnlyMatchingPermissionClaim()
     {

@@ -28,6 +28,7 @@ public static class AuthorizationExtensions
                 options.RequireHttpsMetadata = section.GetValue("RequireHttpsMetadata", true);
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
+                    ValidIssuer = authority,
                     ValidAudience = audience,
                     NameClaimType = "preferred_username",
                     RoleClaimType = "roles"
