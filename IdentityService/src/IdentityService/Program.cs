@@ -1,9 +1,8 @@
 using IdentityService.Services;
 using Keycloak.Client;
 using Keycloak.Client.Configuration;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using ShopNet.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,23 +16,7 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddHttpClient<IKeycloakClient, KeycloakClient>();
 builder.Services.AddScoped<IIdentityProvider, KeycloakIdentityProvider>();
 
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.Authority = keycloakOptions.Authority ??
-            $"{keycloakOptions.BaseUrl.TrimEnd('/')}/realms/{keycloakOptions.Realm}";
-        if (!string.IsNullOrWhiteSpace(keycloakOptions.MetadataAddress))
-            options.MetadataAddress = keycloakOptions.MetadataAddress;
-        options.RequireHttpsMetadata = builder.Environment.IsProduction();
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidAudience = keycloakOptions.Audience,
-            NameClaimType = "preferred_username",
-            RoleClaimType = "roles"
-        };
-    });
-builder.Services.AddAuthorization();
+builder.Services.AddShopNetAuthorization(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>

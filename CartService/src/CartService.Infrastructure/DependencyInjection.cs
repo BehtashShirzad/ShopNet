@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using StackExchange.Redis;
+using ShopNet.Authorization;
 
 namespace CartService.Infrastructure;
 
@@ -34,10 +35,23 @@ public static class DependencyInjection
         };
         grpc.Validate();
         services.AddSingleton(grpc);
+        services.AddShopNetServiceAuthentication(cfg);
         services.AddGrpcClient<CatalogProtoService.CatalogProtoServiceClient>(options =>
-            options.Address = new Uri(cfg["Grpc:CatalogService"] ?? "http://localhost:60002"));
+                options.Address = new Uri(cfg["Grpc:CatalogService"] ?? "http://localhost:60002"))
+            .ConfigureChannel(options => options.UnsafeUseInsecureChannelCallCredentials = true)
+            .AddCallCredentials(async (_, metadata, provider) =>
+            {
+                var token = await provider.GetRequiredService<IServiceAccessTokenProvider>().GetTokenAsync();
+                metadata.Add("Authorization", $"Bearer {token}");
+            });
         services.AddGrpcClient<InventoryAvailabilityService.InventoryAvailabilityServiceClient>(options =>
-            options.Address = new Uri(cfg["Grpc:InventoryService"] ?? "http://localhost:5084"));
+                options.Address = new Uri(cfg["Grpc:InventoryService"] ?? "http://localhost:5084"))
+            .ConfigureChannel(options => options.UnsafeUseInsecureChannelCallCredentials = true)
+            .AddCallCredentials(async (_, metadata, provider) =>
+            {
+                var token = await provider.GetRequiredService<IServiceAccessTokenProvider>().GetTokenAsync();
+                metadata.Add("Authorization", $"Bearer {token}");
+            });
         services.AddScoped<ICatalogService, CatalogGrpcClient>();
         services.AddScoped<IInventoryAvailabilityClient, InventoryGrpcClient>();
         services.AddScoped<IIntegrationEventBus, Bus>();

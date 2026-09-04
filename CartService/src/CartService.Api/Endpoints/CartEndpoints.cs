@@ -4,6 +4,7 @@ using CartService.Application.Query;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using ShopNet.Authorization;
 
 namespace CartService.Api
 {
@@ -13,10 +14,11 @@ namespace CartService.Api
         {
             var map = endpoint.MapGroup("cart");
             map.AddEndpointFilter<CartFailureFilter>();
-            map.MapPost("/items", AddCart);
-            map.MapGet("/{cartId}",GetCartItems);
-            map.MapPut("/items/{cartId}",AddProductToCart);
-            map.MapPost("/checkout/{cartId}",Checkout).RequireAuthorization();
+            map.MapPost("/items", AddCart).RequireAuthorization(CartPermissions.Write);
+            map.MapGet("/{cartId}",GetCartItems).RequireAuthorization(CartPermissions.Read);
+            map.MapPut("/items/{cartId}",AddProductToCart).RequireAuthorization(CartPermissions.Write);
+            map.MapPost("/checkout/{cartId}",Checkout)
+                .RequireAuthorization(CartPermissions.Checkout);
             return map;
         }
 

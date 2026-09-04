@@ -6,6 +6,7 @@ using Serilog;
 using Application.Abstractions.Contracts;
 using CatalogService.Api.Grpc;
 using Microsoft.EntityFrameworkCore;
+using ShopNet.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationServices();
 builder.Services.AddGrpc();
+builder.Services.AddShopNetAuthorization(builder.Configuration, CatalogPermissions.All);
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .WriteTo.Console()               
@@ -54,8 +56,11 @@ if (app.Environment.IsDevelopment())
 
 if (app.Configuration.GetValue("HttpsRedirection:Enabled", true))
     app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapProductEndpoints();
 app.MapCategoryEndpoints();
-app.MapGrpcService<CatalogServiceGrpcService>();
+app.MapGrpcService<CatalogServiceGrpcService>()
+    .RequireAuthorization(CatalogPermissions.InternalRead);
 app.Run();

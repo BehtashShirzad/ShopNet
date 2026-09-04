@@ -4,6 +4,7 @@ using OrderService.Application;
 using OrderService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using ShopNet.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 Log.Logger = new LoggerConfiguration()
@@ -20,6 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Host.UseSerilog();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddShopNetAuthorization(builder.Configuration, OrderPermissions.All);
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(builder.Configuration.GetValue("ServicePorts:Grpc", 60001), o =>
@@ -50,6 +52,6 @@ app.UseSwaggerUI();
 
 if (app.Configuration.GetValue("HttpsRedirection:Enabled", true))
     app.UseHttpsRedirection();
-
-
+app.UseAuthentication();
+app.UseAuthorization();
 app.Run();

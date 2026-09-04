@@ -9,6 +9,7 @@ using CatalogService.Application.Features.Product.Queries.GetProducts;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using ShopNet.Authorization;
 
 namespace CatalogService.Api.Routes
 {
@@ -20,6 +21,7 @@ namespace CatalogService.Api.Routes
             var group = app.MapGroup("products");
 
             group.MapPost("", CreateProduct)
+            .RequireAuthorization(CatalogPermissions.ProductCreate)
             .Produces<CreateProductCommandResponse>()
             .ProducesProblem(400);
 
@@ -27,7 +29,8 @@ namespace CatalogService.Api.Routes
                 .Produces<CreateProductCommandResponse>()
                 .ProducesProblem(400);
 
-            group.MapPut("", UpdateProduct);
+            group.MapPut("", UpdateProduct)
+                .RequireAuthorization(CatalogPermissions.ProductUpdate);
 
 
 

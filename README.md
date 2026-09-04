@@ -30,6 +30,30 @@ Asynchronous messaging uses MassTransit and RabbitMQ. Catalog, Inventory, and Or
 
 The complete order, payment, and reservation workflow is not yet implemented as a saga.
 
+## Authentication and authorization
+
+Keycloak issues all user and service tokens. Every API validates the token issuer, signature, and `shopnet-api` audience through the shared `ShopNet.Authorization` building block.
+
+Authorization is permission-based. API code does not depend directly on Keycloak role names. Keycloak roles are composite collections of permissions, which allows roles to change without changing endpoint policies.
+
+| Endpoint or interface | Access |
+| --- | --- |
+| Catalog product reads | Public |
+| Catalog product create | `Catalog.Product.Create` |
+| Catalog product update | `Catalog.Product.Update` |
+| Catalog category create | `Catalog.Category.Create` |
+| Catalog category update | `Catalog.Category.Update` |
+| Catalog gRPC reads | `Catalog.Internal.Read` |
+| Inventory gRPC reads | `Inventory.Internal.Read` |
+| Cart reads | `Cart.Read` |
+| Cart changes | `Cart.Write` |
+| Cart checkout | `Cart.Checkout` |
+| Read own order | `Order.ReadOwn` |
+
+The default `customer` role contains Cart permissions and `Order.ReadOwn`. The `admin` role additionally contains Catalog management permissions. Internal gRPC calls use a dedicated `cart-service` service account and the Client Credentials flow.
+
+To add a protected operation, define its permission in `Building-Blocks/src/ShopNet.Authorization/Permissions.cs`, add it to the relevant Keycloak role, register the service permission set, and apply `RequireAuthorization` to the endpoint.
+
 ## Technology
 
 - .NET and ASP.NET Core

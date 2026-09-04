@@ -12,10 +12,48 @@
   "verifyEmail": false,
   "roles": {
     "realm": [
-      { "name": "customer", "description": "ShopNet customer" },
-      { "name": "admin", "description": "ShopNet administrator" },
+      {
+        "name": "customer",
+        "description": "ShopNet customer",
+        "composite": true,
+        "composites": {
+          "client": {
+            "shopnet-api": ["Cart.Read", "Cart.Write", "Cart.Checkout", "Order.ReadOwn"]
+          }
+        }
+      },
+      {
+        "name": "admin",
+        "description": "ShopNet administrator",
+        "composite": true,
+        "composites": {
+          "client": {
+            "shopnet-api": [
+              "Catalog.Product.Create", "Catalog.Product.Update",
+              "Catalog.Category.Create", "Catalog.Category.Update",
+              "Cart.Read", "Cart.Write", "Cart.Checkout",
+              "Order.ReadOwn", "Order.ReadAny"
+            ]
+          }
+        }
+      },
       { "name": "service", "description": "ShopNet service account" }
-    ]
+    ],
+    "client": {
+      "shopnet-api": [
+        { "name": "Catalog.Product.Create" },
+        { "name": "Catalog.Product.Update" },
+        { "name": "Catalog.Category.Create" },
+        { "name": "Catalog.Category.Update" },
+        { "name": "Catalog.Internal.Read" },
+        { "name": "Inventory.Internal.Read" },
+        { "name": "Cart.Read" },
+        { "name": "Cart.Write" },
+        { "name": "Cart.Checkout" },
+        { "name": "Order.ReadOwn" },
+        { "name": "Order.ReadAny" }
+      ]
+    }
   },
   "defaultRoles": [
     "offline_access",
@@ -66,6 +104,21 @@
             "lightweight.claim": "false",
             "introspection.token.claim": "true"
           }
+        },
+        {
+          "name": "shopnet-permissions",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-client-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "client.id": "shopnet-api",
+            "claim.name": "permissions",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
         }
       ]
     },
@@ -75,6 +128,42 @@
       "enabled": true,
       "bearerOnly": true,
       "protocol": "openid-connect"
+    },
+    {
+      "clientId": "cart-service",
+      "name": "Cart Service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "ShopNet!CartClient2026",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "protocol": "openid-connect",
+      "protocolMappers": [
+        {
+          "name": "shopnet-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "shopnet-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        },
+        {
+          "name": "shopnet-permissions",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-client-role-mapper",
+          "config": {
+            "client.id": "shopnet-api",
+            "claim.name": "permissions",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "access.token.claim": "true"
+          }
+        }
+      ]
     },
     {
       "clientId": "identity-admin-service",
@@ -90,6 +179,14 @@
     }
   ],
   "users": [
+    {
+      "username": "service-account-cart-service",
+      "enabled": true,
+      "serviceAccountClientId": "cart-service",
+      "clientRoles": {
+        "shopnet-api": ["Catalog.Internal.Read", "Inventory.Internal.Read"]
+      }
+    },
     {
       "username": "service-account-identity-admin-service",
       "enabled": true,

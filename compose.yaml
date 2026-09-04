@@ -141,6 +141,7 @@ services:
       Keycloak__Audience: shopnet-api
       Keycloak__Authority: "http://localhost:${SHOPNET_KEYCLOAK_PORT:-8080}/realms/shopnet"
       Keycloak__MetadataAddress: http://keycloak:8080/realms/shopnet/.well-known/openid-configuration
+      Keycloak__RequireHttpsMetadata: "false"
     ports:
       - "${SHOPNET_IDENTITY_PORT:-5239}:8080"
     depends_on:
@@ -159,6 +160,10 @@ services:
       ConnectionStrings__CatalogServiceConnection: "Server=sqlserver,1433;Database=CatalogService;User Id=sa;Password=${SHOPNET_SQL_PASSWORD:-ShopNet!Sql2026};Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True"
       CatalogOutbox__DeliveryEnabled: "true"
       ASPNETCORE_ENVIRONMENT: Development
+      Keycloak__Authority: "http://localhost:${SHOPNET_KEYCLOAK_PORT:-8080}/realms/shopnet"
+      Keycloak__MetadataAddress: http://keycloak:8080/realms/shopnet/.well-known/openid-configuration
+      Keycloak__Audience: shopnet-api
+      Keycloak__RequireHttpsMetadata: "false"
     ports:
       - "${SHOPNET_CATALOG_HTTP_PORT:-6002}:8080"
       - "${SHOPNET_CATALOG_GRPC_PORT:-60002}:8081"
@@ -181,6 +186,10 @@ services:
       InventoryOutbox__DeliveryEnabled: "true"
       Inventory__ExpiryEnabled: "true"
       ASPNETCORE_ENVIRONMENT: Development
+      Keycloak__Authority: "http://localhost:${SHOPNET_KEYCLOAK_PORT:-8080}/realms/shopnet"
+      Keycloak__MetadataAddress: http://keycloak:8080/realms/shopnet/.well-known/openid-configuration
+      Keycloak__Audience: shopnet-api
+      Keycloak__RequireHttpsMetadata: "false"
     ports:
       - "${SHOPNET_INVENTORY_GRPC_PORT:-5084}:8080"
     depends_on:
@@ -203,6 +212,10 @@ services:
       Inventory__ReservationMinutes: "15"
       Inventory__CommandQueue: inventory-commands-v1
       ASPNETCORE_ENVIRONMENT: Development
+      Keycloak__Authority: "http://localhost:${SHOPNET_KEYCLOAK_PORT:-8080}/realms/shopnet"
+      Keycloak__MetadataAddress: http://keycloak:8080/realms/shopnet/.well-known/openid-configuration
+      Keycloak__Audience: shopnet-api
+      Keycloak__RequireHttpsMetadata: "false"
     ports:
       - "${SHOPNET_ORDER_HTTP_PORT:-6001}:8080"
       - "${SHOPNET_ORDER_GRPC_PORT:-60001}:8081"
@@ -230,7 +243,11 @@ services:
       Keycloak__Authority: "http://localhost:${SHOPNET_KEYCLOAK_PORT:-8080}/realms/shopnet"
       Keycloak__MetadataAddress: http://keycloak:8080/realms/shopnet/.well-known/openid-configuration
       Keycloak__Audience: shopnet-api
+      Keycloak__RequireHttpsMetadata: "false"
       CartOutbox__DeliveryEnabled: "true"
+      Keycloak__ServiceClient__TokenEndpoint: http://keycloak:8080/realms/shopnet/protocol/openid-connect/token
+      Keycloak__ServiceClient__ClientId: cart-service
+      Keycloak__ServiceClient__ClientSecret: "ShopNet!CartClient2026"
       ASPNETCORE_ENVIRONMENT: Development
     ports:
       - "${SHOPNET_CART_HTTP_PORT:-6003}:8080"

@@ -1,10 +1,12 @@
 using InventoryService.Api.Grpc;
 using InventoryService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using ShopNet.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddGrpc();
 builder.Services.AddInventory(builder.Configuration);
+builder.Services.AddShopNetAuthorization(builder.Configuration, InventoryPermissions.All);
 var app = builder.Build();
 
 if (app.Configuration.GetValue("Database:MigrateOnStartup", false))
@@ -13,7 +15,10 @@ if (app.Configuration.GetValue("Database:MigrateOnStartup", false))
     await scope.ServiceProvider.GetRequiredService<InventoryDbContext>().Database.MigrateAsync();
 }
 
-app.MapGrpcService<InventoryAvailabilityGrpcService>();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapGrpcService<InventoryAvailabilityGrpcService>()
+    .RequireAuthorization(InventoryPermissions.InternalRead);
 app.Run();
 
 public partial class Program;

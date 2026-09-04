@@ -20,5 +20,6 @@
 <ItemGroup>
 <ProjectReference Include="../CartService.Application/CartService.Application.csproj"/>
 <ProjectReference Include="../CartService.Infrastructure/CartService.Infrastructure.csproj"/>
+<ProjectReference Include="../../../Building-Blocks/src/ShopNet.Authorization/ShopNet.Authorization.csproj"/>
 </ItemGroup>
 </Project>

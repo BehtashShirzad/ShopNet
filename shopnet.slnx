@@ -5,6 +5,7 @@
     <Project Path="Building-Blocks/src/Domain.Abstractions/Domain.Abstractions.csproj" />
     <Project Path="Building-Blocks/src/Infrastructure.Abstractions/Infrastructure.Abstractions.csproj" />
     <Project Path="Building-Blocks/src/ShopNet.Contracts/ShopNet.Contracts.csproj" />
+    <Project Path="Building-Blocks/src/ShopNet.Authorization/ShopNet.Authorization.csproj" />
   </Folder>
   <Folder Name="/Building-Blocks/test/">
     <Project Path="Building-Blocks/test/BuildingBlocks.UnitTests/BuildingBlocks.UnitTests.csproj" />

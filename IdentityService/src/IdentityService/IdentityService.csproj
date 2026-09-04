@@ -17,6 +17,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../Keycloak.Client/Keycloak.Client.csproj" />
+    <ProjectReference Include="../../../Building-Blocks/src/ShopNet.Authorization/ShopNet.Authorization.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Configuration/OpenIddictCertificateLoader.cs" />

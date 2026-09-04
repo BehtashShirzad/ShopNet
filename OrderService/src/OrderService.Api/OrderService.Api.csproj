@@ -22,5 +22,6 @@
 <ItemGroup>
     <ProjectReference Include="..\OrderService.Application\OrderService.Application.csproj" />
     <ProjectReference Include="..\OrderService.Infrastructure\OrderService.Infrastructure.csproj" />
+    <ProjectReference Include="../../../Building-Blocks/src/ShopNet.Authorization/ShopNet.Authorization.csproj" />
   </ItemGroup>
 </Project>

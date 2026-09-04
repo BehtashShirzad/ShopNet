@@ -7,6 +7,7 @@ using CatalogService.Application.Features.Category.Commands.CreateCategory;
 using CatalogService.Application.Features.Category.Commands.UpdateCategory;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using ShopNet.Authorization;
 
 namespace CatalogService.Api.Endpoints
 {
@@ -15,8 +16,10 @@ namespace CatalogService.Api.Endpoints
         public static IEndpointRouteBuilder MapCategoryEndpoints(this IEndpointRouteBuilder app)
         {
             var group = app.MapGroup("Category");
-            group.MapPost("", CraeteCategory);
-              group.MapPut("", UpdateCategory);
+            group.MapPost("", CraeteCategory)
+                .RequireAuthorization(CatalogPermissions.CategoryCreate);
+            group.MapPut("", UpdateCategory)
+                .RequireAuthorization(CatalogPermissions.CategoryUpdate);
 
             return group;
         }

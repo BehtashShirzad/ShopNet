@@ -28,6 +28,7 @@
 
     <ProjectReference Include="..\CatalogService.Application\CatalogService.Application.csproj" />
  <ProjectReference Include="..\CatalogService.Infrastructure\CatalogService.Infrastructure.csproj" />
+ <ProjectReference Include="../../../Building-Blocks/src/ShopNet.Authorization/ShopNet.Authorization.csproj" />
   </ItemGroup>
 <ItemGroup>
   <Protobuf Include="Grpc\Protos\CatalogService.proto" GrpcServices="Server" />

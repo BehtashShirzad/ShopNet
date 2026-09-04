@@ -1,9 +1,8 @@
 using CartService.Api;
 using CartService.Application;
 using CartService.Infrastructure;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using ShopNet.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,24 +10,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationServices();
 builder.Services.AddInfraServices(builder.Configuration);
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.Authority = builder.Configuration["Keycloak:Authority"]
-            ?? throw new InvalidOperationException("Keycloak:Authority is required.");
-        var metadataAddress = builder.Configuration["Keycloak:MetadataAddress"];
-        if (!string.IsNullOrWhiteSpace(metadataAddress))
-            options.MetadataAddress = metadataAddress;
-        options.Audience = builder.Configuration["Keycloak:Audience"] ?? "shopnet-api";
-        options.RequireHttpsMetadata = builder.Environment.IsProduction();
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            NameClaimType = "preferred_username",
-            RoleClaimType = "roles"
-        };
-    });
-builder.Services.AddAuthorization();
+builder.Services.AddShopNetAuthorization(builder.Configuration, CartPermissions.All);
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()

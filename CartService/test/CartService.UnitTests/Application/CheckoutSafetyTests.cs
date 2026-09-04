@@ -284,7 +284,13 @@ public sealed class CheckoutSafetyTests
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        services.AddInfraServices(new ConfigurationBuilder().Build());
+        services.AddInfraServices(new ConfigurationBuilder().AddInMemoryCollection(
+            new Dictionary<string, string?>
+            {
+                ["Keycloak:ServiceClient:TokenEndpoint"] = "http://keycloak/token",
+                ["Keycloak:ServiceClient:ClientId"] = "cart-service",
+                ["Keycloak:ServiceClient:ClientSecret"] = "test-secret"
+            }).Build());
         using var provider = services.BuildServiceProvider();
         var options = provider.GetRequiredService<IOptionsMonitor<GrpcClientFactoryOptions>>();
         Assert.Equal(60002, options.Get(nameof(CatalogProtoService.CatalogProtoServiceClient)).Address!.Port);
