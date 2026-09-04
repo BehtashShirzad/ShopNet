@@ -1,84 +1,250 @@
 # ShopNet
 
-ShopNet is a C# microservices sample implementing a modular e‑commerce platform with separated services for catalog, cart, and orders plus shared building blocks (contracts and abstractions). It's aimed at developers learning how to structure domain, application, and infrastructure concerns across multiple services and reuse common building-block libraries.
+ShopNet is a .NET e-commerce system built as a set of independently deployable microservices. Each service owns its domain boundary and data store. Production code is organized into API, Application, Domain, and Infrastructure layers.
 
-## Stack
-- Language(s): C# 
-- Framework / runtime: .NET 
-- Notable libraries (examples you will find across services):
-  - Entity Framework Core for persistence and migrations
-  - A logging framework (e.g., Serilog) for structured logging
-  - API toolkits for building Web APIs and exposing OpenAPI/Swagger
-  - Internal contracts and abstractions shared via `Building-Blocks/src/ShopNet.Contracts`
+## Services
 
+| Service | Responsibility | Storage | Interfaces |
+| --- | --- | --- | --- |
+| Catalog | Products and categories | SQL Server | HTTP, gRPC, RabbitMQ |
+| Inventory | Stock levels, reservations, releases, and stock consumption | SQL Server | gRPC, RabbitMQ |
+| Cart | Shopping carts and checkout | Redis | HTTP, gRPC, RabbitMQ |
+| Order | Order creation and order state | SQL Server | HTTP, gRPC, RabbitMQ |
+| Identity | Users, authentication, and token issuance | SQL Server | HTTP, OpenID Connect |
+| Keycloak | External identity management for the ShopNet realm | PostgreSQL | OpenID Connect |
 
-How it fits together:
-- Each service is split into Api, Application, Domain, and Infrastructure projects following a clean architecture style. Building-Blocks contains shared contracts and abstraction libraries used by services to keep cross-service coupling low (e.g., DTOs/events, interfaces for repositories and messaging). Services communicate by using shared contracts and can be run/managed independently.
+Shared projects are located under `Building-Blocks`:
 
-## Features
-- Microservice decomposition: Catalog, Cart, Order
-- Shared building-blocks for contracts and abstractions to encourage reuse
-- Placeholders and helpers for EF Core migrations (see Migration-help.md / Migration-Help)
-- Per-service solutions and project layouts to make each service independently buildable and testable
+- `Domain.Abstractions`: base aggregate, entity, and domain event types
+- `Application.Abstractions`: application-layer contracts
+- `Infrastructure.Abstractions`: infrastructure contracts
+- `ShopNet.Contracts`: integration messages and cross-service contracts
+
+## Architecture
+
+Catalog owns product information and does not store stock quantities. Inventory is the sole owner of stock levels and reservations.
+
+Cart uses gRPC to read product information and available inventory. Checkout publishes a message through RabbitMQ. Order creates the order and sends an inventory reservation command. Inventory processes the command and publishes the reservation result back to Order.
+
+Asynchronous messaging uses MassTransit and RabbitMQ. Catalog, Inventory, and Order use the Entity Framework Core transactional outbox. Cart uses a Redis-backed checkout outbox so a checkout message is retained when delivery fails temporarily.
+
+The complete order, payment, and reservation workflow is not yet implemented as a saga.
+
+## Technology
+
+- .NET and ASP.NET Core
+- Entity Framework Core
+- SQL Server
+- Redis
+- RabbitMQ and MassTransit
+- gRPC
+- Keycloak and OpenID Connect
+- Docker Compose and Docker Buildx Bake
+- xUnit and Testcontainers
 
 ## Prerequisites
-- .NET SDK (match the TargetFramework in each service's csproj)
-- A database supported by the chosen EF Core provider (SQL Server, PostgreSQL, etc.)
-- Docker Desktop (required for integration tests)
-- (Optional) dotnet-ef global tool for applying migrations:
-  ```
-  dotnet tool install --global dotnet-ef
-  ```
 
-## Run a service (short path)
-1. From repository root, restore and build:
-   ```bash
-   dotnet restore
-   dotnet build
-   ```
-2. Configure required environment variables or appsettings for the service you want to run (connection strings, messaging endpoints, etc.).
-3. Apply migrations where applicable (see each service's Migration-help.md / Migration-Help):
-   ```bash
-   cd CatalogService/src/CatalogService.Infrastructure
-   dotnet ef database update --project ./CatalogService.Infrastructure.csproj --startup-project ../CatalogService.Api
-   ```
-   Adjust path and project names for CartService and OrderService as needed.
-4. Run the API (example for one service):
-   ```bash
-   cd ../CatalogService.Api
-   dotnet run
-   ```
-5. Repeat for other services; each service exposes its own API surface.
+- Docker Desktop with Docker Compose
+- A .NET SDK compatible with the projects' target framework
+- Git
 
-## Configuration
-- Check each service's appsettings.json / appsettings.Development.json and the Migration-help.md files for service-specific configuration and migration instructions.
-- Shared configuration conventions (e.g., connection string keys) are typically defined by Building-Blocks contracts—inspect `Building-Blocks/src/ShopNet.Contracts` to see shared configuration keys and DTOs.
+Running the complete system through Docker does not require local installations of SQL Server, Redis, RabbitMQ, or PostgreSQL.
 
-## Development notes
-- Work inside one service at a time: modify Domain → Application → Infrastructure, update migrations, then update Api and tests.
-- Keep shared contracts stable: changes in `Building-Blocks/src/ShopNet.Contracts` can affect multiple services.
-- Migration helper files in CatalogService and OrderService contain notes to run or scaffold EF Core migrations for those services.
+## Environment configuration
+
+Create a local environment file from the provided example:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+The default values are intended only for local development. Change all passwords and client secrets before using a shared or production environment. Do not commit the `.env` file.
+
+## Run the complete system
+
+Run the following command from the repository root:
+
+```powershell
+docker compose up -d --build
+```
+
+This builds the ShopNet application images and starts all application and infrastructure containers. Database migrations are applied when the services start.
+
+Check container status:
+
+```powershell
+docker compose ps
+```
+
+Follow all logs:
+
+```powershell
+docker compose logs -f
+```
+
+Follow one service:
+
+```powershell
+docker compose logs -f inventory
+```
+
+Stop the environment while retaining its data:
+
+```powershell
+docker compose down
+```
+
+Remove the environment and its development volumes:
+
+```powershell
+docker compose down -v
+```
+
+The last command permanently removes the development databases and the data stored by Redis and RabbitMQ.
+
+## Build application images
+
+Build the Cart, Catalog, Identity, Inventory, and Order images together:
+
+```powershell
+docker buildx bake
+```
+
+This command builds only the application images. SQL Server, Redis, RabbitMQ, PostgreSQL, and Keycloak use the upstream images declared in `compose.yaml`.
+
+## Default ports
+
+| Component | Host address |
+| --- | --- |
+| Identity API | `http://localhost:5239` |
+| Catalog HTTP | `http://localhost:6002` |
+| Catalog gRPC | `http://localhost:60002` |
+| Inventory gRPC | `http://localhost:5084` |
+| Order HTTP | `http://localhost:6001` |
+| Order gRPC | `http://localhost:60001` |
+| Cart HTTP | `http://localhost:6003` |
+| Keycloak | `http://localhost:8080` |
+| RabbitMQ Management | `http://localhost:15672` |
+| SQL Server | `localhost:1433` |
+| Redis | `localhost:6379` |
+| RabbitMQ AMQP | `localhost:5672` |
+
+Every host port can be overridden through the variables documented in `.env.example`.
+
+## Keycloak
+
+Docker Compose runs Keycloak with a dedicated PostgreSQL database. The ShopNet realm is imported from the following file during the first startup:
+
+```text
+deploy/keycloak/shopnet-realm.json
+```
+
+Open the administration console at:
+
+```text
+http://localhost:8080/admin/master/console/
+```
+
+Default local administrator credentials:
+
+```text
+Username: admin
+Password: ShopNet!KeycloakAdmin2026
+```
+
+After signing in, switch from the `master` realm to the `shopnet` realm.
+
+The ShopNet account console is available at:
+
+```text
+http://localhost:8080/realms/shopnet/account/
+```
+
+To allow users to create their own accounts, open the `shopnet` realm, go to `Realm settings > Login`, and enable `User registration`.
+
+The `IdentityService/src/Keycloak.Client` project supports registration, login, token refresh, logout, user lookup, password reset, and user deletion. The client is registered with IdentityService, but the current Identity endpoints still use the existing OpenIddict flow. Replacing those endpoints with Keycloak is a separate migration step.
+
+## Run services outside Docker
+
+Start the required infrastructure first:
+
+```powershell
+docker compose up -d sqlserver redis rabbitmq keycloak-db keycloak
+```
+
+Restore and build the solution:
+
+```powershell
+dotnet restore shopnet.slnx
+dotnet build shopnet.slnx
+```
+
+Run an API project directly. For example:
+
+```powershell
+dotnet run --project CatalogService/src/CatalogService.Api/CatalogService.Api.csproj
+```
+
+When a service runs outside Docker, its development settings and dependency addresses must use the host ports instead of Docker network names.
 
 ## Tests
 
-Each component keeps production projects under `src` and test projects in the adjacent `test` directory. Unit tests cover domain rules, application handlers, API/controller behavior, and infrastructure adapters. Integration tests use Testcontainers to start disposable Docker dependencies:
+Production projects are stored under each service's `src` directory. Test projects are stored in the adjacent `test` directory.
 
-- Cart: Redis and RabbitMQ
-- Catalog: SQL Server and RabbitMQ
-- Order: SQL Server and RabbitMQ
-- Identity: SQL Server
+Run the complete test suite:
 
-Run every test from the repository root:
-
-```bash
+```powershell
 dotnet test shopnet.slnx
 ```
 
-Docker Desktop must be running. Testcontainers selects random host ports and removes its containers after the run, so the suites do not require fixed local ports or shared development databases.
+Run the Inventory test projects:
 
-## Contributing
-- Fork and open a branch per change (one concern per PR).
-- If you change domain models that affect the DB, include migration files and clear migration instructions in the PR.
-- Add or update tests where applicable.
+```powershell
+dotnet test InventoryService/test/InventoryService.UnitTest/InventoryService.UnitTest.csproj
+dotnet test InventoryService/test/InventoryService.IntegrationTests/InventoryService.IntegrationTests.csproj
+```
 
+Integration tests use Testcontainers to start real dependencies such as SQL Server, Redis, and RabbitMQ. Docker Desktop must be running. Testcontainers selects available host ports and removes the test containers after the run.
 
+Run the Keycloak client tests:
+
+```powershell
+dotnet test IdentityService/test/Keycloak.Client.UnitTests/Keycloak.Client.UnitTests.csproj
+```
+
+## Repository layout
+
+```text
+ShopNet/
+|-- Building-Blocks/
+|   |-- src/
+|   `-- test/
+|-- CartService/
+|   |-- src/
+|   `-- test/
+|-- CatalogService/
+|   |-- src/
+|   `-- test/
+|-- IdentityService/
+|   |-- src/
+|   `-- test/
+|-- InventoryService/
+|   |-- src/
+|   `-- test/
+|-- OrderService/
+|   |-- src/
+|   `-- test/
+|-- deploy/keycloak/
+|-- compose.yaml
+|-- docker-bake.hcl
+|-- .env.example
+`-- shopnet.slnx
+```
+
+## Development guidelines
+
+- Include unit tests with service changes. Add integration tests when a change involves a database, cache, message broker, or service boundary.
+- Keep cross-service messages in `ShopNet.Contracts`. Do not add direct references between service domain projects.
+- Do not add stock fields to Catalog. Inventory owns all stock rules and state.
+- Persist database changes and outgoing messages through the service's outbox.
+- Do not commit real secrets, certificates, passwords, or local `.env` files.
