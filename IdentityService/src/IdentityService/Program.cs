@@ -3,12 +3,21 @@ using IdentityService.Models;
 using IdentityService.Persistence;
 using IdentityService.Services;
 using IdentityService.Configuration;
+using Keycloak.Client;
+using Keycloak.Client.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using OpenIddict.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var keycloakOptions = builder.Configuration
+    .GetSection(KeycloakOptions.SectionName)
+    .Get<KeycloakOptions>() ?? new KeycloakOptions();
+builder.Services.AddSingleton(keycloakOptions);
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddHttpClient<IKeycloakClient, KeycloakClient>();
 
 // ─── Database ───────────────────────────────────────────────────────────────
 builder.Services.AddDbContext<AppDbContext>(options =>

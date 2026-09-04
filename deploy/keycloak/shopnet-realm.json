@@ -1,0 +1,84 @@
+{
+  "realm": "shopnet",
+  "displayName": "ShopNet",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "rememberMe": true,
+  "verifyEmail": false,
+  "roles": {
+    "realm": [
+      { "name": "customer", "description": "ShopNet customer" },
+      { "name": "admin", "description": "ShopNet administrator" },
+      { "name": "service", "description": "ShopNet service account" }
+    ]
+  },
+  "defaultRoles": [
+    "offline_access",
+    "uma_authorization",
+    "customer"
+  ],
+  "clients": [
+    {
+      "clientId": "shopnet-web",
+      "name": "ShopNet Web Client",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:3000/*",
+        "http://localhost:5002/*"
+      ],
+      "webOrigins": [
+        "http://localhost:3000",
+        "http://localhost:5002"
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "basic",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    },
+    {
+      "clientId": "identity-admin-service",
+      "name": "Identity Admin Service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "ShopNet!KeycloakClient2026",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "protocol": "openid-connect"
+    }
+  ],
+  "users": [
+    {
+      "username": "service-account-identity-admin-service",
+      "enabled": true,
+      "serviceAccountClientId": "identity-admin-service",
+      "clientRoles": {
+        "realm-management": [
+          "manage-users",
+          "view-users",
+          "query-users"
+        ]
+      }
+    }
+  ]
+}

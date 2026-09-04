@@ -34,10 +34,12 @@
   <Folder Name="/IdentityService/" />
   <Folder Name="/IdentityService/src/">
     <Project Path="IdentityService/src/IdentityService/IdentityService.csproj" />
+    <Project Path="IdentityService/src/Keycloak.Client/Keycloak.Client.csproj" />
   </Folder>
   <Folder Name="/IdentityService/test/">
     <Project Path="IdentityService/test/IdentityService.IntegrationTests/IdentityService.IntegrationTests.csproj" />
     <Project Path="IdentityService/test/IdentityService.UnitTests/IdentityService.UnitTests.csproj" />
+    <Project Path="IdentityService/test/Keycloak.Client.UnitTests/Keycloak.Client.UnitTests.csproj" />
   </Folder>
   <Folder Name="/InventoryService/" />
   <Folder Name="/InventoryService/src/">

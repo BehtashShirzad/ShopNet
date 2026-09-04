@@ -71,6 +71,57 @@ services:
     networks:
       - shopnet
 
+  keycloak-db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: "${SHOPNET_KEYCLOAK_DB_PASSWORD:-ShopNet!KeycloakDb2026}"
+    volumes:
+      - keycloak-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - shopnet
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.7.3
+    restart: unless-stopped
+    command: ["start-dev", "--import-realm", "--health-enabled=true"]
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: "${SHOPNET_KEYCLOAK_DB_PASSWORD:-ShopNet!KeycloakDb2026}"
+      KC_BOOTSTRAP_ADMIN_USERNAME: "${SHOPNET_KEYCLOAK_ADMIN_USERNAME:-admin}"
+      KC_BOOTSTRAP_ADMIN_PASSWORD: "${SHOPNET_KEYCLOAK_ADMIN_PASSWORD:-ShopNet!KeycloakAdmin2026}"
+      KC_HEALTH_ENABLED: "true"
+      JAVA_OPTS_KC_HEAP: "-XX:InitialRAMPercentage=25 -XX:MaxRAMPercentage=65"
+    ports:
+      - "${SHOPNET_KEYCLOAK_PORT:-8080}:8080"
+    volumes:
+      - ./deploy/keycloak/shopnet-realm.json:/opt/keycloak/data/import/shopnet-realm.json:ro
+    healthcheck:
+      test:
+        - CMD
+        - bash
+        - -c
+        - exec 3<>/dev/tcp/127.0.0.1/9000; printf 'HEAD /health/ready HTTP/1.0\r\n\r\n' >&3; grep -q '200 OK' <&3
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    mem_limit: 1g
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    networks:
+      - shopnet
+
   identity:
     <<: *service-defaults
     image: shopnet/identity-service:${TAG:-local}
@@ -82,10 +133,18 @@ services:
       ASPNETCORE_HTTP_PORTS: "8080"
       Database__MigrateOnStartup: "true"
       ConnectionStrings__IdentityServiceConnection: "Server=sqlserver,1433;Database=IdentityService;User Id=sa;Password=${SHOPNET_SQL_PASSWORD:-ShopNet!Sql2026};Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True"
+      Keycloak__BaseUrl: http://keycloak:8080
+      Keycloak__Realm: shopnet
+      Keycloak__AdminClientId: identity-admin-service
+      Keycloak__AdminClientSecret: "ShopNet!KeycloakClient2026"
+      Keycloak__LoginClientId: shopnet-web
+      Keycloak__LoginClientSecret: ""
     ports:
       - "${SHOPNET_IDENTITY_PORT:-5239}:8080"
     depends_on:
       sqlserver:
+        condition: service_healthy
+      keycloak:
         condition: service_healthy
 
   catalog:
@@ -193,3 +252,4 @@ volumes:
   sqlserver-data:
   rabbitmq-data:
   redis-data:
+  keycloak-db-data:
