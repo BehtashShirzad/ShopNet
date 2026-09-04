@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
  
 builder.Services.AddOpenApi();
-builder.Services.AddSwaggerGen();
+builder.Services.AddShopNetSwagger("Catalog Service");
 builder.Services.AddApplicationServices();
 builder.Services.AddGrpc();
 builder.Services.AddShopNetAuthorization(builder.Configuration, CatalogPermissions.All);

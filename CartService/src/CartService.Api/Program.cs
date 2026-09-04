@@ -7,7 +7,7 @@ using ShopNet.Authorization;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
-builder.Services.AddSwaggerGen();
+builder.Services.AddShopNetSwagger("Cart Service");
 builder.Services.AddApplicationServices();
 builder.Services.AddInfraServices(builder.Configuration);
 builder.Services.AddShopNetAuthorization(builder.Configuration, CartPermissions.All);

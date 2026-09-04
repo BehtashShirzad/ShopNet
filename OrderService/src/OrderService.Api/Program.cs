@@ -17,8 +17,7 @@ Log.Logger = new LoggerConfiguration()
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddOpenApi();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddShopNetSwagger("Order Service");
 builder.Host.UseSerilog();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddShopNetAuthorization(builder.Configuration, OrderPermissions.All);

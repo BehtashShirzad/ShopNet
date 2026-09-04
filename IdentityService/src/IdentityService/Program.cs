@@ -1,7 +1,6 @@
 using IdentityService.Services;
 using Keycloak.Client;
 using Keycloak.Client.Configuration;
-using Microsoft.OpenApi;
 using ShopNet.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,15 +17,7 @@ builder.Services.AddScoped<IIdentityProvider, KeycloakIdentityProvider>();
 
 builder.Services.AddShopNetAuthorization(builder.Configuration);
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "Identity Service",
-        Version = "v1"
-    });
-});
+builder.Services.AddShopNetSwagger("Identity Service");
 
 builder.Services.AddCors(options =>
 {
