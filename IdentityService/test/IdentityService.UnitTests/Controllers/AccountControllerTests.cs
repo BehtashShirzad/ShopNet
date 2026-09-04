@@ -1,126 +1,65 @@
 using System.Security.Claims;
+using IdentityService.Contracts;
 using IdentityService.Controllers;
-using IdentityService.Dtos;
 using IdentityService.Services;
+using Keycloak.Client.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
-namespace IdentityService.UnitTests;
+namespace IdentityService.UnitTests.Controllers;
 
-public class AccountControllerTests
+public sealed class AccountControllerTests
 {
     [Fact]
-    public async Task Register_ReturnsBadRequestWhenServiceFails()
+    public async Task Login_ReturnsTokenResponse()
     {
-        var service = new Mock<IAuthService>();
-        service.Setup(x => x.RegisterAsync(
-                It.IsAny<string>(), It.IsAny<string>(),
-                It.IsAny<string?>(), It.IsAny<string?>()))
-            .ReturnsAsync(AuthResult.Fail("duplicate"));
+        var token = new KeycloakTokenResponse { AccessToken = "access-token", ExpiresIn = 300 };
+        var provider = new Mock<IIdentityProvider>();
+        provider.Setup(x => x.LoginAsync(It.IsAny<LoginRequest>(), default)).ReturnsAsync(token);
 
-        var result = await new AccountController(service.Object).Register(
-            new RegisterRequest("user@example.com", "Password1", "First", "Last"));
+        var result = await Create(provider.Object).Login(
+            new LoginRequest("user@example.com", "Password1"), default);
 
-        Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Same(token, Assert.IsType<OkObjectResult>(result).Value);
     }
 
     [Fact]
-    public async Task Register_ReturnsUserIdWhenServiceSucceeds()
+    public async Task Profile_UsesJwtSubject()
     {
-        var service = new Mock<IAuthService>();
-        service.Setup(x => x.RegisterAsync(
-                "user@example.com", "Password1", "First", "Last"))
-            .ReturnsAsync(AuthResult.Ok("user-id"));
+        var provider = new Mock<IIdentityProvider>();
+        provider.Setup(x => x.GetUserAsync("user-id", default)).ReturnsAsync(new UserProfile(
+            "user-id", "user", "user@example.com", null, null, true, false));
 
-        var result = await new AccountController(service.Object).Register(
-            new RegisterRequest("user@example.com", "Password1", "First", "Last"));
+        var result = await Create(provider.Object, "user-id").GetProfile(default);
 
-        var ok = Assert.IsType<OkObjectResult>(result);
-        Assert.Equal("user-id", ReadProperty<string>(ok.Value, "userId"));
+        var profile = Assert.IsType<UserProfile>(Assert.IsType<OkObjectResult>(result).Value);
+        Assert.Equal("user-id", profile.Id);
     }
 
     [Fact]
-    public async Task Login_MapsFailureAndSuccessToHttpResults()
+    public async Task ProfileWithoutSubject_ReturnsUnauthorized()
     {
-        var service = new Mock<IAuthService>();
-        service.SetupSequence(x => x.LoginAsync("user@example.com", "Password1"))
-            .ReturnsAsync(AuthResult.Fail("invalid"))
-            .ReturnsAsync(AuthResult.Ok("user-id"));
-        var controller = new AccountController(service.Object);
-
-        var failed = await controller.Login(
-            new LoginRequest("user@example.com", "Password1"));
-        var succeeded = await controller.Login(
-            new LoginRequest("user@example.com", "Password1"));
-
-        Assert.IsType<BadRequestObjectResult>(failed);
-        Assert.IsType<OkObjectResult>(succeeded);
-    }
-
-    [Fact]
-    public async Task GetProfile_RequiresSubjectClaim()
-    {
-        var controller = CreateController(Mock.Of<IAuthService>());
-
-        var result = await controller.GetProfile();
+        var result = await Create(Mock.Of<IIdentityProvider>()).GetProfile(default);
 
         Assert.IsType<UnauthorizedResult>(result);
     }
 
     [Fact]
-    public async Task GetProfile_ReturnsNotFoundOrUser()
+    public async Task Logout_ForwardsRefreshToken()
     {
-        var service = new Mock<IAuthService>();
-        service.SetupSequence(x => x.GetUserByIdAsync("user-id"))
-            .ReturnsAsync((UserDto?)null)
-            .ReturnsAsync(new UserDto(
-                "user-id", "user@example.com", "First", "Last", ["User"]));
-        var controller = CreateController(service.Object, "user-id");
+        var provider = new Mock<IIdentityProvider>();
+        var result = await Create(provider.Object, "user-id")
+            .Logout(new LogoutRequest("refresh-token"), default);
 
-        var missing = await controller.GetProfile();
-        var found = await controller.GetProfile();
-
-        Assert.IsType<NotFoundResult>(missing);
-        var ok = Assert.IsType<OkObjectResult>(found);
-        Assert.Equal("user-id", Assert.IsType<UserDto>(ok.Value).Id);
+        Assert.IsType<NoContentResult>(result);
+        provider.Verify(x => x.LogoutAsync("refresh-token", default), Times.Once);
     }
 
-    [Fact]
-    public async Task ChangePassword_UsesAuthenticatedUserId()
+    private static AccountController Create(IIdentityProvider provider, string? subject = null)
     {
-        var service = new Mock<IAuthService>();
-        service.Setup(x => x.ChangePasswordAsync("user-id", "old", "new"))
-            .ReturnsAsync(AuthResult.Ok("user-id"));
-        var controller = CreateController(service.Object, "user-id");
-
-        var result = await controller.ChangePassword(
-            new ChangePasswordRequest("old", "new"));
-
-        Assert.IsType<OkObjectResult>(result);
-        service.Verify(x => x.ChangePasswordAsync("user-id", "old", "new"), Times.Once);
-    }
-
-    [Fact]
-    public async Task Logout_UsesSubjectAndReturnsOk()
-    {
-        var service = new Mock<IAuthService>();
-        service.Setup(x => x.LogoutAsync("user-id")).ReturnsAsync(true);
-        var controller = CreateController(service.Object, "user-id");
-
-        var result = await controller.Logout();
-
-        Assert.IsType<OkObjectResult>(result);
-        service.Verify(x => x.LogoutAsync("user-id"), Times.Once);
-    }
-
-    private static AccountController CreateController(
-        IAuthService service, string? userId = null)
-    {
-        var claims = userId is null
-            ? Array.Empty<Claim>()
-            : [new Claim("sub", userId)];
-        return new AccountController(service)
+        var claims = subject is null ? [] : new[] { new Claim("sub", subject) };
+        return new AccountController(provider)
         {
             ControllerContext = new ControllerContext
             {
@@ -131,7 +70,4 @@ public class AccountControllerTests
             }
         };
     }
-
-    private static T? ReadProperty<T>(object? instance, string name) =>
-        (T?)instance?.GetType().GetProperty(name)?.GetValue(instance);
 }

@@ -52,7 +52,29 @@
         "phone",
         "offline_access",
         "microprofile-jwt"
+      ],
+      "protocolMappers": [
+        {
+          "name": "shopnet-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "shopnet-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true",
+            "lightweight.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        }
       ]
+    },
+    {
+      "clientId": "shopnet-api",
+      "name": "ShopNet API Audience",
+      "enabled": true,
+      "bearerOnly": true,
+      "protocol": "openid-connect"
     },
     {
       "clientId": "identity-admin-service",

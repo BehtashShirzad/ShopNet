@@ -10,7 +10,7 @@ ShopNet is a .NET e-commerce system built as a set of independently deployable m
 | Inventory | Stock levels, reservations, releases, and stock consumption | SQL Server | gRPC, RabbitMQ |
 | Cart | Shopping carts and checkout | Redis | HTTP, gRPC, RabbitMQ |
 | Order | Order creation and order state | SQL Server | HTTP, gRPC, RabbitMQ |
-| Identity | Users, authentication, and token issuance | SQL Server | HTTP, OpenID Connect |
+| Identity | Keycloak-facing account API | Keycloak | HTTP, OpenID Connect |
 | Keycloak | External identity management for the ShopNet realm | PostgreSQL | OpenID Connect |
 
 Shared projects are located under `Building-Blocks`:
@@ -162,7 +162,7 @@ http://localhost:8080/realms/shopnet/account/
 
 To allow users to create their own accounts, open the `shopnet` realm, go to `Realm settings > Login`, and enable `User registration`.
 
-The `IdentityService/src/Keycloak.Client` project supports registration, login, token refresh, logout, user lookup, password reset, and user deletion. The client is registered with IdentityService, but the current Identity endpoints still use the existing OpenIddict flow. Replacing those endpoints with Keycloak is a separate migration step.
+The `IdentityService/src/Keycloak.Client` project supports registration, login, token refresh, logout, user lookup, password reset, and user deletion. IdentityService exposes these operations through an application-level identity provider abstraction. Keycloak is the source of truth for users and tokens; IdentityService no longer issues tokens through OpenIddict or stores a second local user account.
 
 ## Run services outside Docker
 

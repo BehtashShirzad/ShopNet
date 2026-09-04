@@ -10,19 +10,22 @@
 <!--    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />-->
 <!--  </ItemGroup>-->
   <ItemGroup>
-    <!-- ASP.NET Core Identity + EF Core -->
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.11" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer"           Version="10.0.11" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design"              Version="10.0.11" />
-
-    <!-- OpenIddict — Core + EF Store + ASP.NET Core Server -->
-    <PackageReference Include="OpenIddict.AspNetCore"      Version="5.4.0" />
-    <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="5.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.11" />
 
     <!-- Swagger -->
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../Keycloak.Client/Keycloak.Client.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Configuration/OpenIddictCertificateLoader.cs" />
+    <Compile Remove="Controllers/AuthorizationController.cs" />
+    <Compile Remove="Dtos/*.cs" />
+    <Compile Remove="Migrations/**/*.cs" />
+    <Compile Remove="Models/AppUser.cs" />
+    <Compile Remove="Persistence/**/*.cs" />
+    <Compile Remove="Services/AuthService.cs" />
+    <Compile Remove="Services/IAuthService.cs" />
   </ItemGroup>
 </Project>

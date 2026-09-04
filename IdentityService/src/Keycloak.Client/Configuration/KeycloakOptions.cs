@@ -10,6 +10,9 @@ public sealed class KeycloakOptions
     public string AdminClientSecret { get; init; } = string.Empty;
     public string LoginClientId { get; init; } = string.Empty;
     public string? LoginClientSecret { get; init; }
+    public string Audience { get; init; } = "shopnet-api";
+    public string? Authority { get; init; }
+    public string? MetadataAddress { get; init; }
 
     internal void Validate()
     {
@@ -23,5 +26,7 @@ public sealed class KeycloakOptions
             throw new InvalidOperationException("Keycloak:AdminClientSecret is required.");
         if (string.IsNullOrWhiteSpace(LoginClientId))
             throw new InvalidOperationException("Keycloak:LoginClientId is required.");
+        if (string.IsNullOrWhiteSpace(Audience))
+            throw new InvalidOperationException("Keycloak:Audience is required.");
     }
 }

@@ -1,51 +1,57 @@
 using CartService.Api;
 using CartService.Application;
 using CartService.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationServices();
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultScheme =
-        OpenIddict.Validation.AspNetCore
-            .OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
-});
+builder.Services.AddInfraServices(builder.Configuration);
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = builder.Configuration["Keycloak:Authority"]
+            ?? throw new InvalidOperationException("Keycloak:Authority is required.");
+        var metadataAddress = builder.Configuration["Keycloak:MetadataAddress"];
+        if (!string.IsNullOrWhiteSpace(metadataAddress))
+            options.MetadataAddress = metadataAddress;
+        options.Audience = builder.Configuration["Keycloak:Audience"] ?? "shopnet-api";
+        options.RequireHttpsMetadata = builder.Environment.IsProduction();
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            NameClaimType = "preferred_username",
+            RoleClaimType = "roles"
+        };
+    });
 builder.Services.AddAuthorization();
- builder.Services.AddInfraServices(builder.Configuration);
- builder.Services.AddOpenIddict()
-     .AddValidation(options =>
-     {
-         options.SetIssuer(builder.Configuration["IdentityService:Address"]!); // IdentityService
-         options.AddAudiences("api");
 
-         options.UseSystemNetHttp();
-         options.UseAspNetCore();
-     });
- Log.Logger = new LoggerConfiguration()
+Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
-    .WriteTo.Console()               
+    .WriteTo.Console()
     .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
- 
- builder.Services.AddHttpContextAccessor();
- builder.Host.UseSerilog();
- builder.WebHost.ConfigureKestrel(options =>
- {
-     options.ListenAnyIP(builder.Configuration.GetValue("ServicePorts:Grpc", 60003), o =>
-     {
-         o.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
-     });
-     options.ListenAnyIP(builder.Configuration.GetValue("ServicePorts:Http", 6003), o =>
-     {
-         o.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1;
-     });
- });
+
+builder.Services.AddHttpContextAccessor();
+builder.Host.UseSerilog();
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(builder.Configuration.GetValue("ServicePorts:Grpc", 60003), listener =>
+    {
+        listener.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
+    });
+    options.ListenAnyIP(builder.Configuration.GetValue("ServicePorts:Http", 6003), listener =>
+    {
+        listener.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1;
+    });
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -59,7 +65,4 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapCartEndpoints();
 
-
 app.Run();
-
- 
