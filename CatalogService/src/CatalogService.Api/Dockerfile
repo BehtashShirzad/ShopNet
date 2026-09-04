@@ -12,6 +12,7 @@ COPY ["Building-Blocks/src/Domain.Abstractions/Domain.Abstractions.csproj", "Bui
 COPY ["Building-Blocks/src/Application.Abstractions/Application.Abstractions.csproj", "Building-Blocks/src/Application.Abstractions/"]
 COPY ["Building-Blocks/src/Infrastructure.Abstractions/Infrastructure.Abstractions.csproj", "Building-Blocks/src/Infrastructure.Abstractions/"]
 COPY ["Building-Blocks/src/ShopNet.Contracts/ShopNet.Contracts.csproj", "Building-Blocks/src/ShopNet.Contracts/"]
+COPY ["Building-Blocks/src/ShopNet.Authorization/ShopNet.Authorization.csproj", "Building-Blocks/src/ShopNet.Authorization/"]
 COPY ["CatalogService/src/CatalogService.Domain/CatalogService.Domain.csproj", "CatalogService/src/CatalogService.Domain/"]
 COPY ["CatalogService/src/CatalogService.Application/CatalogService.Application.csproj", "CatalogService/src/CatalogService.Application/"]
 COPY ["CatalogService/src/CatalogService.Infrastructure/CatalogService.Infrastructure.csproj", "CatalogService/src/CatalogService.Infrastructure/"]

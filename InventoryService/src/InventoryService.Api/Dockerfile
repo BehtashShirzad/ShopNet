@@ -10,6 +10,7 @@ ENV DOTNET_CLI_TELEMETRY_OPTOUT=1 \
 COPY ["Directory.Build.targets", "."]
 COPY ["Building-Blocks/src/Domain.Abstractions/Domain.Abstractions.csproj", "Building-Blocks/src/Domain.Abstractions/"]
 COPY ["Building-Blocks/src/ShopNet.Contracts/ShopNet.Contracts.csproj", "Building-Blocks/src/ShopNet.Contracts/"]
+COPY ["Building-Blocks/src/ShopNet.Authorization/ShopNet.Authorization.csproj", "Building-Blocks/src/ShopNet.Authorization/"]
 COPY ["InventoryService/src/InventoryService.Domain/InventoryService.Domain.csproj", "InventoryService/src/InventoryService.Domain/"]
 COPY ["InventoryService/src/InventoryService.Application/InventoryService.Application.csproj", "InventoryService/src/InventoryService.Application/"]
 COPY ["InventoryService/src/InventoryService.Infrastructure/InventoryService.Infrastructure.csproj", "InventoryService/src/InventoryService.Infrastructure/"]

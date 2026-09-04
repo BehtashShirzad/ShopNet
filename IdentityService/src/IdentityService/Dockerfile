@@ -8,6 +8,7 @@ ENV DOTNET_CLI_TELEMETRY_OPTOUT=1 \
     NUGET_XMLDOC_MODE=skip
 
 COPY ["Directory.Build.targets", "."]
+COPY ["Building-Blocks/src/ShopNet.Authorization/ShopNet.Authorization.csproj", "Building-Blocks/src/ShopNet.Authorization/"]
 COPY ["IdentityService/src/Keycloak.Client/Keycloak.Client.csproj", "IdentityService/src/Keycloak.Client/"]
 COPY ["IdentityService/src/IdentityService/IdentityService.csproj", "IdentityService/src/IdentityService/"]
 RUN --mount=type=cache,id=shopnet-nuget-v2,target=/root/.nuget/packages,sharing=locked \
