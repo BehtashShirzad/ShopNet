@@ -224,8 +224,8 @@ public sealed class CheckoutSafetyTests
         List<ProductViewModelInput> products = condition switch
         {
             "null" => null!,
-            "quantity" => [new(Guid.NewGuid(), 0, 10, "P")],
-            _ => Enumerable.Range(0, 101).Select(_ => new ProductViewModelInput(Guid.NewGuid(), 1, 10, "P")).ToList()
+            "quantity" => [new(Guid.NewGuid(), 0)],
+            _ => Enumerable.Range(0, 101).Select(_ => new ProductViewModelInput(Guid.NewGuid(), 1)).ToList()
         };
         var handler = new AddCartCommandHandler(new Mock<IRepository>(MockBehavior.Strict).Object,
             new Mock<ICatalogService>(MockBehavior.Strict).Object);
@@ -243,7 +243,7 @@ public sealed class CheckoutSafetyTests
         var error = await Assert.ThrowsAsync<CheckoutRejectedException>(() => handler.Handle(new()
         {
             CartId = cart.Id, UserId = cart.CustomerId,
-            ProductDto = new(cart.Items.Single().ProductId, 1, 10, "P")
+            ProductDto = new(cart.Items.Single().ProductId, 1)
         }, default));
         Assert.Equal("cart_closed", error.Code);
     }

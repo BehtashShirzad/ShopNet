@@ -53,7 +53,7 @@ public class CartEndpointIntegrationTests
 
         var response = await app.GetTestClient().PostAsJsonAsync("/cart/items",
             new AddCartCommand([
-                new ProductViewModelInput(productId, 1, 5m, "Product")
+                new ProductViewModelInput(productId, 1 )
             ]));
         var result = await response.Content.ReadFromJsonAsync<Guid>();
 

@@ -299,7 +299,7 @@ public sealed class CheckoutPersistenceTests(CartContainersFixture fixture)
         var cart = await host.Seed();
         await host.Checkout(cart.Id);
         using var response = await host.Http.PutAsJsonAsync($"/cart/items/{cart.Id}",
-            new CartService.Application.Commands.ProductViewModelInput(host.Upstream.ProductId, 1, 10, "P"));
+            new CartService.Application.Commands.ProductViewModelInput(host.Upstream.ProductId, 1));
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         Assert.Contains("cart_closed", await response.Content.ReadAsStringAsync());
         Assert.Equal(2, (await host.Read(cart.Id)).Items.Single().Quantity);

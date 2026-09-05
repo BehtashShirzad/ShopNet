@@ -26,7 +26,7 @@ public class CartApplicationTests
         catalog.Setup(x => x.GetProduct(productId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new GetProductDto(productId, "Canonical name", 25m));
         var command = new AddCartCommand([
-            new ProductViewModelInput(productId, 2, 999m, "Untrusted name")
+            new ProductViewModelInput(productId, 2)
         ]) { UserId = userId };
 
         var id = await new AddCartCommandHandler(repository.Object, catalog.Object)
@@ -49,7 +49,7 @@ public class CartApplicationTests
         catalog.Setup(x => x.GetProduct(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((GetProductDto?)null);
         var command = new AddCartCommand([
-            new ProductViewModelInput(Guid.NewGuid(), 1, 10m, "Missing")
+            new ProductViewModelInput(Guid.NewGuid(), 1)
         ]) { UserId = Guid.NewGuid() };
 
         var exception = await Assert.ThrowsAsync<Exception>(() =>
@@ -189,6 +189,6 @@ public class CartApplicationTests
         CartId = cartId,
         UserId = userId,
         ProductDto = new ProductViewModelInput(
-            productId ?? Guid.NewGuid(), 2, 999m, "Client value")
+            productId ?? Guid.NewGuid(), 2)
     };
 }
